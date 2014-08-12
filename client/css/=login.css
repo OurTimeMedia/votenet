@@ -1,0 +1,51 @@
+/*login page*/
+.login-body{background:url(../images/body-login.jpg) left top repeat-x;}
+.login_mn
+{	width:850px; margin:0 auto;
+}
+.login_header_mn
+{	float:left; width:100%;
+}	
+.login_logo
+{	margin:0 auto; padding:25px 0; width:411px;
+}
+.login_rt_txt
+{	float:right; padding-top:48px;
+}
+.login_cont_mn
+{	float:left; width:100%; padding-bottom:23px;
+}
+.login_bg
+{	background:url(../images/login_bg.png) no-repeat; height:320px;
+}
+.login_bg label{font-size:15px;}
+.txtbg
+{	background:url(../images/txtbg.jpg) no-repeat left; height:33px; vertical-align:middle;	margin-bottom:15px;
+}
+.txtbg input
+{	width:253px; font-size:16px; color:#000; background:none; border:0px; padding-left:10px;
+}
+.login_now_btn
+{	background:url(../images/login_now.gif) no-repeat; height:39px; width:109px; cursor:pointer; border:0px;
+}
+.register_btn
+{	background:url(../images/register_btn.gif) no-repeat; height:31px; width:86px; cursor:pointer; border:0px; margin-left:8px;
+}
+.txt18blue2
+{	font-size:18px; color:#00448e;
+}
+.txt11
+{	font-size:11px;
+}
+.txt11 a
+{	font-size:11px;
+}
+.txt14 
+{	font-size:14px; text-decoration:none;
+}
+.txt14 a
+{	color:#333; font-size:14px; text-decoration:none;
+}
+.txt14 a:hover
+{	text-decoration:underline;
+}

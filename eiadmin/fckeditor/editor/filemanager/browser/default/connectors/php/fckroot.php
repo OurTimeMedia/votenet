@@ -1,0 +1,1 @@
+<? print str_replace("editor/editor/filemanager/browser/default/connectors/php/".basename($_SERVER['PHP_SELF']),"",$_SERVER['PHP_SELF']); ?>

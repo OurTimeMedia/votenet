@@ -1,0 +1,175 @@
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%;	vertical-align: baseline; background: transparent;}
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q {	quotes: none;}
+blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none;}
+
+/* remember to define focus styles! */
+:focus { outline: 0;}
+
+/* remember to highlight inserts somehow! */
+ins { text-decoration: none;}
+del { text-decoration: line-through;}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: collapse; border-spacing: 0; }
+/* Normalizing Styles
+-----------------------------------------------------------------------------*/
+
+h1{clear:both; font-size:36px; font-weight:normal; color:#602122; margin:0; padding:0 0 20px 0; font-family: 'FuturaLight'; color:#eeeeee; text-transform:uppercase;}
+h2{ font-size:24px; color:#ff1100; margin:0; padding:0 0 20px 0;  font-family: 'ZurichBdXCnBTBold'; text-transform:uppercase;}
+h3{ font-size:15px; font-weight:bold; color:#c9c9c9; margin:0; padding:0 0 15px 0; font-family:Arial, Helvetica, sans-serif; text-transform:uppercase;}
+
+h1 span{color:#606060;}
+.clear{clear:both;}
+a, img{outline:none; border:none;}
+p{line-height:18px; padding:0 0 20px 0; color:#7d7d7d; font-size:14px;}
+a{ color:#ff1100; text-decoration:none;}
+
+.l{ float:left;}
+.r{ float:right;}
+
+body{ background:url(../images/body-images.gif) repeat-x; width:100%; color:#7d7d7d; font-size:14px; font-family:Arial, Helvetica, sans-serif;}
+.main-top{ background:url(../images/top-bg.jpg) top center no-repeat; width:100%; float:left;}
+.main-top-sub{ background:url(../images/top-bg-sub.jpg) top center no-repeat; width:100%; float:left;}
+.boby-sub{ background:url(../images/body-images-sub.gif) repeat-x; width:100%; height:auto; float:left;}
+
+/* contener
+-----------------------------------------------------------------------------*/
+#contener{ width:1000px; height:auto; margin:0 auto;}
+
+/* Top
+-----------------------------------------------------------------------------*/
+#top{ width:1000px; height:auto; float:left;}
+.top-header{ width:1000px; height:auto; float:right; padding:6px 0 6px 0;}
+.top-header p{ float:right; text-align:right; font-size:13px; color:#fff; line-height:16px; padding:0 3px 0 0;}
+.top-header p span{ color:#ff1100;}
+.top-header p span.call{ font-size:12px; color:#fff; padding:0 15px 0 0;}
+.top-buttomb{ width:1000px; height:auto; float:left;}
+.logo{ float:left;}
+
+/* menu
+-----------------------------------------------------------------------------*/
+.menu{ float:right; width:auto; height:auto; padding:9px 0 0 0;}
+.menu ul{ float:left;}
+.menu ul li{ float:left; display:inline; /* new */ position:relative; z-index:500;}
+.menu ul li a{ font-size:21px; color:#ebebeb; text-transform:uppercase;  font-family: 'ZurichBdXCnBTBold'; text-decoration:none; line-height:52px; height:52px; float:left;}
+.menu ul li a span{ height:52px; float:left; padding:0 14px;}
+.menu ul li a:hover, .menu ul li:hover a{ background:url(../images/menu-hover-right.gif) right top no-repeat;}
+.menu ul li a:hover span, .menu ul li:hover a span{ background:url(../images/menu-hover-left.gif) left top no-repeat;}
+
+.menu ul li a.active{ background:url(../images/menu-hover-right.gif) right top no-repeat;}
+.menu ul li a.active span{ background:url(../images/menu-hover-left.gif) left top no-repeat;}
+
+/* #nav {
+	margin:0; 
+	padding:0; 
+	list-style:none;
+}	 */
+
+/* submenu, it's hidden by default */
+.menu ul ul {
+	position:absolute; 
+	left:0; 
+	display:none; 
+	padding:0; 
+	list-style:none;
+	background:#E63E35;
+	top:50px;
+}
+
+.menu ul ul li {
+	width:170px; 
+	float:left; 
+	border-top:1px solid #fff;
+	line-height:30px;
+	height:30px;
+	padding:0;
+}
+
+/* display block will make the link fill the whole area of LI */
+.menu ul ul a {
+	display:block;  
+	line-height:20px;
+	height:30px;
+	line-height:30px;
+	width:150px;
+	padding:0 10px;
+	font-size:12px;
+}
+
+.menu ul ul a:hover {
+	text-decoration:none;
+}
+
+/* fix ie6 small issue */
+/* we should always avoid using hack like this */
+/* should put it into separate file : ) */
+*html .menu ul ul {
+	margin:0 0 0 -2px;
+}
+
+
+/* Header
+-----------------------------------------------------------------------------*/
+#header{ width:1000px; height:auto; float:left;}
+.header-left{ float:left; width:315px; height:auto; padding:115px 0 0 0;}
+.header-left p{ color:#eeeeee; font-size:36px; float:left; font-family: 'FuturaLight'; line-height:45px; text-transform:uppercase; padding:0 0 48px 0; font-weight:normal;}
+.header-left p span{color:#eeeeee; font-size:27px; text-transform:lowercase; line-height: 25px;}
+.demo{ margin:0 0 15px 0;}
+.header-left a{ float:left;}
+.header-right{ background:url(../images/slider-bg.jpg) no-repeat; width:672px; height:484px; float:right; margin:20px 0 0 0; position:relative;}
+.request{ margin:0 0 50px 0;}
+
+/* Middle
+-----------------------------------------------------------------------------*/
+#middle{ width:986px; height:auto; float:left; padding:25px 0 25px 14px;}
+.unions-b{ background:url(../images/mid-bm.gif) left repeat-y; width:300px; height:auto; float:left; margin:0 0 0 17px;}
+.unions-bt{ background:url(../images/mid-bt.gif) top left no-repeat; width:284px; height:auto; float:left; padding:8px 8px 1px 8px;}
+.unions-bb{ background:url(../images/mid-bb.gif) bottom left no-repeat; width:300px; height:auto; float:left;}
+.associationsb{ background:#f2f2f2; float:left; padding:13px 0 13px 5px; margin:0 0 0 0; border-bottom:#fff solid 8px; width:279px;}
+.unions-b p{ font-size:12px; line-height:18px; padding:0;}
+.associationsb h2{ padding:0;}
+
+.blog-b{ background:url(../images/mid-bm1.gif) left repeat-y; width:300px; height:auto; float:left; margin:0 0 0 17px;}
+.blog-bt{ background:url(../images/mid-bt1.gif) top left no-repeat; width:298px; height:auto; float:left; padding:0 1px;}
+.blog-b p{ font-size:12px; line-height:18px; padding:0;}
+.blog-bt h2{ padding:5px 0 11px 17px; background:#f3f3f3; margin:8px 0 0 0;}
+.blogb-main{ width:282px; height:auto; float:left; background:#fff; border-top:#e3e3e3 solid 1px; margin:0 0 0 0; padding:8px 8px 0 8px;}
+.blog-comb{ background:#f2f2f2; padding:10px 9px 10px; width:264px; border-bottom:#fff solid 1px; float:left;}
+.blog-comb a{ font-size:12px; line-height:18px;}
+
+.blog-comb span{ float:left; font-style:normal; font-size:12px; width:182px; background:url(../images/testi2.gif) right bottom no-repeat; padding:0 0 0 3px; line-height:17px;}
+.testimonb{ float:left; width:195px; padding:0 0 0 10px;}
+.blog-comb img{ float:left;}
+.testimonb p{ color:#ff1100; line-height:17px;}
+.blogmain{ padding:0 0 8px 0; float:left;}
+.social{ float:right; padding:4px 0 0 0;}
+
+/* Footer
+-----------------------------------------------------------------------------*/
+#footer-mail{ background:url(../images/footer-bg.gif) repeat-x; width:100%; float:left;}
+#footer{ width:1000px; margin:0 auto; padding:15px 0 0 0;}
+.companb{ width:287px; height:auto; float:left;}
+.companb ul{ float:left;}
+.companb ul li{float:left; display:inline; width:105px; line-height:18px;}
+.companb ul li a{ color:#808080; font-size:12px;}
+.companb ul li a:hover{ color:#ED1C24;  font-size:12px;}
+.companb ul li a.act{ color:#ED1C24; font-size:12px;}
+
+.contact{ float:left; width:400px; height:auto; float:left; color:#787878; font-size:12px;}
+.contact .add{ width:156px; font-size:12px; float:left;}
+.contact .call{ width:236px; font-size:12px; float:left;}
+.contact .call span{ text-align:right; padding:0 50px 0 0; float:right;}
+.copy{ float:right; text-align:right; width:170px; font-size:12px; padding:35px 0 0 0;}
+.slider{position:absolute; left:24px; top:28px; width:624px; height:396px;}
+
+.register{font-family: 'ZurichBdXCnBTBold'; text-transform:inherit; float:right; font-size:24px; line-height:35px; color:#ed1c24;}
+#header-sub h1{ float:left;}
+#header-sub{ width:1000px; height:auto; float:left; padding:56px 0 25px 0;}
+#middle-sub{ width:1000px; height:auto; float:left; padding:50px 0 25px 0;}
+.red{ color:#ed1c24;}
+.aboutbtn{ padding:50px 0 0 0;}

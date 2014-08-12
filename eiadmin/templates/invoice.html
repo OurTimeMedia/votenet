@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>ThePartyBook</title>
+<style>
+    .format {
+        font-family:Verdana, Geneva, sans-serif;
+        font-size:12px;
+    }
+    
+    label {
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+            <img src="##path##images/logo0000.png" />
+        </td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ccc;">
+            <table border="0" width="100%">
+                <tr>
+                    <td><label>Invoice No.: </label>##invoice_no##</td>
+                    <td>&nbsp;</td>
+                    <td align="right"><label>Date: </label>##date##</td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3">##name##,</td>
+                </tr>
+                <tr>
+                    <td colspan="3">##address##</td>
+                </tr>
+                <tr>
+                    <td colspan="3">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="3" style="border: 1px solid #ccc;">
+                        <table border="0" cellpadding="5" cellspacing="0">
+                            <tr>
+                                <th width="50%" class="format" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">Item</th>
+                                <th width="25%" class="format" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;" align="right">Qty</th>
+                                <th width="25%" class="format" style=" border-bottom: 1px solid #ccc;" align="right">Price</th>
+                            </tr>
+                            ##payment_details##
+                            <tr style="line-height: 100px;">
+                                <td class="format" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">&nbsp;</td>
+                                <td class="format" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">&nbsp;</td>
+                                <td class="format" style=" border-bottom: 1px solid #ccc;">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td class="format" style="border-right: 1px solid #ccc;">&nbsp;</td>
+                                <td class="format" style="border-right: 1px solid #ccc;" align="right"><label>Total: </label></td>
+                                <td class="format" align="right">##total##</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>                
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

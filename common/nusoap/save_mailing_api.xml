@@ -1,0 +1,61 @@
+<strongmail-client username="admin" password="admin" context="mailing" action="save">
+	<mailing file="sample-mailing.cfg">
+		<config>
+			<id>1234</id>
+			<message_id>333</message_id>
+			<subject>test subject</subject>
+			<from_name>Julie Smith</from_name>
+			<from_email>
+				julies@johnsoninc.com
+			</from_email>
+			<reply_email>
+				reply@johnsoninc.com
+			</reply_email>
+			<bounce_email>
+				bounce@johnsoninc.com
+			</bounce_email>
+			<recipient_parameter>email</recipient_parameter>
+			<parameter_separator>::</parameter_separator>
+			<rowid_column>RID</rowid_column>
+			<header>X-Priority: 3;</header>
+			<header>Y-Priority: 88;</header>
+			<log_success>0</log_success>
+			<log_fail>1</log_fail>
+		</config>
+		<database id="1001" format="data">
+			<file>sample001-list.txt<</file>
+			<header>RecipientAddress::Name</header>
+			<records>
+				one@test.com::First Test
+				two@test.com::Second Test
+			</records>
+		</database>
+		<database id="1002" format="file">
+			<file>sample001-database.txt</file>
+		</database>
+		<database id="test" format="file">
+			<file>sample001-testdatabase.txt</file>
+		</database>
+		<message type="text" format="data">
+			<file>sample-001-message.txt</file>
+			<body>
+				this is my sample text message
+				it can be on multiple lines
+			</body>
+			<header>X-Priority: 3</header>
+		</message>
+		<message type="html" format="file">
+			<file>sample001-message.html</file>
+		</message>
+		<attachment format="data">
+			<file>sample001-attach.txt</file>
+			<body>
+				attachment content goes here
+			</body>
+		</attachment>
+		<attachment format="file">
+			<file>sample001-attach.pdf</file>
+		</attachment>
+             <token file="/data1/token.txt" />
+	</mailing>
+</strongmail-client>

@@ -1,0 +1,118 @@
+Options +FollowSymLinks
+Options -Indexes
+RewriteEngine On
+
+RewriteBase /
+
+php_value short_open_tag 1
+php_value magic_quotes_gpc on
+ 
+#RewriteRule php/(.+)/(.+).php$ php/$1/$2.php [L,R=301]
+
+##START - FOR VOTER AREA ACCESS WITHOUT INDEX.PHP FILE NAME IN CONTEST URL##
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI}      ^/$
+RewriteCond %{REQUEST_FILENAME}  !-f
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} ^([^.]+)\.electionimpact\.com [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+##END - FOR VOTER AREA ACCESS WITHOUT INDEX.PHP FILE NAME IN CONTEST URL##
+
+
+##START - FOR VOTER AREA PAGES OTHER THAN INDEX.PHP##
+RewriteCond %{REQUEST_URI} !/design_templates/
+RewriteCond %{REQUEST_URI} !/images/
+RewriteCond %{REQUEST_URI} !/common/
+
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI}      ^(.+).php$
+RewriteCond %{REQUEST_FILENAME}  !-f
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} ^([^.]+)\.electionimpact\.com [NC]
+RewriteRule (.*) voter%{REQUEST_URI}?domain=%1&%{QUERY_STRING} [L]
+##END - FOR VOTER AREA PAGES OTHER THAN INDEX.PHP##
+
+
+##START - IF WE DO NOT ADD FOLLOWING CONDITION, IT REDIRECTS VOTER AREA USER TO ROOT INDEX.PHP FILE##
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI} ^/index.php$
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} ^([^.]+)\.electionimpact\.com [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+##END - IF WE DO NOT ADD FOLLOWING CONDITION, IT REDIRECTS VOTER AREA USER TO ROOT INDEX.PHP FILE##
+
+
+##START - FOR PRIVATE DOMAINS##
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI} ^/index.php$
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} !^electionimpact [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+
+
+RewriteCond %{REQUEST_URI} !/design_templates/
+RewriteCond %{REQUEST_URI} !/images/
+RewriteCond %{REQUEST_URI} !/common/
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI}      ^(.+).php$
+RewriteCond %{REQUEST_FILENAME}  !-f
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} !^electionimpact [NC]
+RewriteRule (.*) voter%{REQUEST_URI}?domain=%1&%{QUERY_STRING} [L]
+
+RewriteCond %{REQUEST_URI} !/design_templates/
+RewriteCond %{REQUEST_URI} !/images/
+RewriteCond %{REQUEST_URI} !/common/
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI} ^/$
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} !^electionimpact [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+##END - FOR PRIVATE DOMAINS##
+
+
+RewriteCond %{HTTP_HOST} ^electionimpact\.com
+RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]
+
+RewriteRule ^index.html$ http://www.electionimpact.com/ [R=301,L]
+RewriteRule ^about.html$ http://www.electionimpact.com/about-us/ [R=301,L]
+RewriteRule ^demo.php$ http://www.electionimpact.com/demo/ [R=301,L]
+RewriteRule ^request-info.php$ http://www.electionimpact.com/request-info/ [R=301,L]
+RewriteRule ^overview.html$ http://www.electionimpact.com/overview/ [R=301,L]
+RewriteRule ^customers.html$ http://www.electionimpact.com/customers/ [R=301,L]
+RewriteRule ^contact-us.html$ http://www.electionimpact.com/contact-us/ [R=301,L]
+RewriteRule ^press-release.html$ http://www.electionimpact.com/press-release/ [R=301,L]
+RewriteRule ^disclaimer.html$ http://www.electionimpact.com/disclaimer/ [R=301,L]
+RewriteRule ^privacy.html$ http://www.electionimpact.com/privacy-statement/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !demo-db.php
+RewriteCond %{REQUEST_FILENAME} !(.*).pdf
+RewriteCond %{REQUEST_URI} !(.*)/$
+RewriteRule ^(.*)$ http://www.electionimpact.com/$1/ [L,R=301]
+
+RewriteRule ^request-info/$ index.php?file=request-info&parent_cms_seo_url=request-info&cms_seo_url=request-info [L]
+RewriteRule ^demo/$ index.php?file=demo&parent_cms_seo_url=demo&cms_seo_url=demo [L]
+#RewriteRule ^testimonial/(.*)/$ index.php?file=testimonial&tId=$1&cms_seo_url=testimonials [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/(.*)/$ index.php?file=cms&parent_cms_seo_url=$1&cms_seo_url=$2 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ index.php?file=cms&cms_seo_url=$1 [L]
+
+ErrorDocument 401 http://www.electionimpact.com/index.php?file=401
+ErrorDocument 400 http://www.electionimpact.com/index.php?file=400
+ErrorDocument 403 http://www.electionimpact.com/index.php?file=403
+ErrorDocument 500 http://www.electionimpact.com/index.php?file=500
+ErrorDocument 404 http://www.electionimpact.com/index.php?file=404
+
+#http://blogs.iis.net/ruslany/archive/2009/04/08/10-url-rewriting-tips-and-tricks.aspx

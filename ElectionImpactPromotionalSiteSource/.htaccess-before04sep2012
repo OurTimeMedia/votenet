@@ -1,0 +1,77 @@
+Options +FollowSymLinks
+Options -Indexes
+RewriteEngine On
+
+RewriteBase /
+
+php_value short_open_tag 1
+php_value magic_quotes_gpc on
+ 
+#RewriteRule php/(.+)/(.+).php$ php/$1/$2.php [L,R=301]
+
+##START - FOR VOTER AREA ACCESS WITHOUT INDEX.PHP FILE NAME IN CONTEST URL##
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI}      ^/$
+RewriteCond %{REQUEST_FILENAME}  !-f
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} ^([^.]+)\.electionimpact\.com [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+##END - FOR VOTER AREA ACCESS WITHOUT INDEX.PHP FILE NAME IN CONTEST URL##
+
+
+##START - FOR VOTER AREA PAGES OTHER THAN INDEX.PHP##
+RewriteCond %{REQUEST_URI} !/design_templates/
+RewriteCond %{REQUEST_URI} !/images/
+RewriteCond %{REQUEST_URI} !/common/
+
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI}      ^(.+).php$
+RewriteCond %{REQUEST_FILENAME}  !-f
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} ^([^.]+)\.electionimpact\.com [NC]
+RewriteRule (.*) voter%{REQUEST_URI}?domain=%1&%{QUERY_STRING} [L]
+##END - FOR VOTER AREA PAGES OTHER THAN INDEX.PHP##
+
+
+##START - IF WE DO NOT ADD FOLLOWING CONDITION, IT REDIRECTS VOTER AREA USER TO ROOT INDEX.PHP FILE##
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI} ^/index.php$
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} ^([^.]+)\.electionimpact\.com [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+##END - IF WE DO NOT ADD FOLLOWING CONDITION, IT REDIRECTS VOTER AREA USER TO ROOT INDEX.PHP FILE##
+
+
+##START - FOR PRIVATE DOMAINS##
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI} ^/index.php$
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} !^electionimpact [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+
+
+RewriteCond %{REQUEST_URI} !/design_templates/
+RewriteCond %{REQUEST_URI} !/images/
+RewriteCond %{REQUEST_URI} !/common/
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI}      ^(.+).php$
+RewriteCond %{REQUEST_FILENAME}  !-f
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} !^electionimpact [NC]
+RewriteRule (.*) voter%{REQUEST_URI}?domain=%1&%{QUERY_STRING} [L]
+
+RewriteCond %{REQUEST_URI} !/design_templates/
+RewriteCond %{REQUEST_URI} !/images/
+RewriteCond %{REQUEST_URI} !/common/
+RewriteCond %{REQUEST_URI} !/prototype/ 
+RewriteCond %{REQUEST_URI} !/demo/
+RewriteCond %{REQUEST_URI} ^/$
+RewriteCond %{HTTP_HOST} !^www\.electionimpact\.com [NC]
+RewriteCond %{HTTP_HOST} !^electionimpact [NC]
+RewriteRule (.*) voter/index.php?domain=%1&%{QUERY_STRING} [L]
+##END - FOR PRIVATE DOMAINS##

@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<title>Election Impact readme</title>
+	</head>
+<body>
+	<table border="0" cellspacing="5" cellpadding="3" width="100%">
+		<tr>
+			<td>
+				<strong>How to use Election Impact API?</strong>
+			</td>
+		</tr>
+		<tr>
+			<td style="background-color:#dfdfdf;">
+				<strong>Step 1: </strong>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="padding-left:5px;">Each company has assigned one API key to identify which company data to retrive. You can get your API key from adminpanel.</p>
+			</td>
+		</tr>
+		<tr>
+			<td style="background-color:#dfdfdf;">
+				<strong>Step 2 : </strong>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="padding-left:5px;">Election Impact allows to make REST api calls to web services.	</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Endpoint URL: </strong>	http://www.electionimpact.com/client/get_data.php
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Parameters:</strong>	API allows following parameters which you can specify while making a call:				
+				
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table border="0" cellspacing="0" cellpadding="0" width="95%" align="center">
+					<tr>
+						<td width="15%"><strong>Parameter</strong></td>
+						<td width="10%"><strong>Required	</strong></td>
+						<td width="20%"><strong>Default</strong></td>
+						<td width="55%"><strong>Purpose</strong></td>
+					</tr>
+					<tr><td colspan="8">&nbsp;</td></tr>
+					<tr>
+						<td>apikey</td><td>Yes</td>
+						<td>blank</td>
+						<td>
+							This is the api key which you get from admin to access (Note: This parameter is case sensitive)
+						</td>
+					</tr>
+					<tr>
+						<td>searchname</td>
+						<td>No</td>
+						<td>blank</td>
+						<td>
+							This will filter data displays only the data that meet criteria that you specify
+						</td>
+					</tr>
+					<tr>
+						<td>state_code</td>
+						<td>No</td>
+						<td>blank</td>
+						<td>
+							This will filter data on given State Code. This is pre-defined two digit state code of USA.
+						</td>
+					</tr>
+					<tr>
+						<td>reg_source</td>
+						<td>No</td>
+						<td>blank</td>
+						<td>
+							This will filter data on given Registation Source.
+						</td>
+					</tr>
+					<tr>
+						<td>regdateTo</td>
+						<td>No</td>
+						<td>blank</td>
+						<td>
+							This will filter data on given registration Date.
+						</td>
+					</tr>
+					<tr>
+						<td>regdateFrom</td>
+						<td>No</td>
+						<td>blank</td>
+						<td>
+							This will filter data on given registration Date starting date is regdateTo and till regdateFrom
+						</td>
+					</tr>
+					<tr>
+						<td>start</td>
+						<td>No</td>
+						<td>1</td>
+						<td>
+							You can specify starting record no. If you will not specify it will start from 1. 
+						</td>
+					</tr>
+					<tr>
+						<td>noofrecord</td>
+						<td>No</td>
+						<td>500</td>
+						<td>
+							You can specify per page record. By default, it will retrive 500 records per call. You can specify value from 1 to 500. If you specify larger value than 500, then it will fetch 500 records per call (for better performance). If you specify smaller value than 1, then it will fetch 50 records per call.
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<strong>Examples of API call : </strong>http://www.electionimpact.com/client/phpsample.php
+			</td>
+		</tr>
+	</table>	
+</body>
+</html>

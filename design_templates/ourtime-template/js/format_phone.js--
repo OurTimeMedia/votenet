@@ -1,0 +1,36 @@
+/* Format phone number function */
+function formatPhone(curPhone)
+{	
+	curPhone.value = formatPhoneStr(curPhone.value);
+}
+
+/* Returns a formatted phone number */
+function formatPhoneStr(phoneNumber)
+{
+	var tempPhone = phoneNumber.replace(/[^0-9]/g,"");
+
+	var extension = "";
+
+	if(tempPhone.indexOf("x") > -1)
+	{
+		extension = " "+tempPhone.substr(tempPhone.indexOf("x"));
+
+		tempPhone = tempPhone.substr(0,tempPhone.indexOf("x"));
+	}
+
+	switch(tempPhone.length)
+	{
+		case(10):
+			return tempPhone.replace(/(...)(...)(....)/g,"$1-$2-$3")+extension;
+		case(11):
+			if(tempPhone.substr(0,1) == "1")
+			{
+				return tempPhone.substr(1).replace(/(...)(...)(....)/g,"$1-$2-$3")+extension;
+			}
+
+			break;
+		default:			
+	}
+
+	return phoneNumber;
+}

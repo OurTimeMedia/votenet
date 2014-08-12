@@ -1,0 +1,71 @@
+<strongmail-client username="strongmail" password="strongmail"
+ context="clientinfo" action="mailing_info">
+	<mailing serial="112233"></mailing>
+</strongmail-client>
+
+
+<!--
+<strongmail-client response="1">
+<mailing file="/sample/mailing.cfg" serial="112233">
+		<config>
+			<id>1234</id>
+			<message_id>333</message_id>
+			<subject>test subject</subject>
+			<from_name>Julie Smith</from_name>
+			<from_email>julies@johnsoninc.com</from_email>
+			<bounce_email>bounce@johnsoninc.com</bounce_email>
+		</config>
+		<database id="1001" format="file">
+			<file>/path/to/mylist.txt</file>
+			<size>156733</size>
+		</database>
+		<database id="1002" format="file">
+			<file>/path/to/existing/database.txt</file>
+			<size>36071</size>
+		</database>
+		<database id="test" format="file">
+			<file>/path/to/test/database.txt</file>
+			<size>81</size>
+		</database>
+		<message type="text" format="file">
+			<file>/path/to/mymsg.txt</file>
+		</message>
+		<message type="html" format="file">
+			<file>/path/to/message.html</file>
+		</message>
+		<message type="aol" format="file">
+			<file>/path/to/message.aol</file>
+		</message>
+		<attachment format="file">
+			<file>/path/to/picture.gif</file>
+		</attachment>
+		<status code="1">Active</status>
+		<delivery type="test">
+			<pid>4567</pid>
+			<start>2003-04-15 20:30:00
+				<year>2003</year>
+				<month>04</month>
+				<day>15</day>
+				<hour>20</hour>
+				<minute>30</minute>
+				<second>00</second>
+			</start>
+			<end>2003-04-15 22:15:57
+				<year>2003</year>
+				<month>04</month>
+				<day>15</day>
+				<hour>22</hour>
+				<minute>15</minute>
+				<second>57</second>
+			</end>
+			<sent>100</sent>
+			<failed>10</failed>
+			<total>110</total>
+		</delivery>
+		<tracking>
+			<opens>5123</opens>
+			<clicks>50</clicks>
+		</tracking>
+	</mailing>
+</strongmail-client>
+-->

@@ -1,0 +1,146 @@
+/* VALIDATION */
+.msg-table-info
+{
+	margin-top:10px;
+}
+
+/* message css*/
+.msg-table-error
+{
+	width:100%;
+	margin:auto;
+}
+.msg-error-img
+{
+	width:45px;
+	height:30px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+.msg-error-title
+{
+	color:#A71111;
+	font-size:13px;
+	font-weight:bold;
+	text-align:left;
+}
+.msg-error-sub-title
+{
+	padding-top:4px;
+	padding-bottom:4px;
+	color:#000;
+	text-align:left;
+}
+.msg-table-info
+{
+	width:98%;
+	margin:10px;
+	padding-left:8px;
+	/*background:#E3F7DB;
+	border-top:solid 4px #61A600;
+	padding-left:40px;
+	width:864px;*/
+}
+.msg-info-img
+{
+	width:45px;
+	height:30px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+.msg-info-title
+{
+	font-size:14px;
+	font-weight:bold;
+	color:#50960A;
+	text-align:left;
+}
+.msg-info-sub-title
+{
+	padding-top:4px;
+	padding-bottom:4px;
+	color:#000;
+	text-align:left;
+	font-size:12px;
+}
+.msg-corner-top-left
+{
+	width:8px;
+	height:10px;
+	background:url(../images/message_01.png) no-repeat  right;
+	text-align:right;
+}
+.msg-corner-top-middle
+{
+	height:10px;
+	background:url(../images/message_02.png) repeat-x;
+}
+.msg-corner-top-right
+{
+	width:14px;
+	height:10px;
+	background:url(../images/message_03.png) no-repeat;
+}
+.msg-middle-left
+{
+	width:8px;
+	background:url(../images/message_04.png) repeat-y right;
+	text-align:right;
+}
+.msg-middle-middle
+{
+	background:url(../images/message_05.png);
+}
+.msg-middle-right
+{
+	width:14px;
+	background:url(../images/message_06.png) repeat-y;
+}
+.msg-corner-bottom-left
+{
+	width:8px;
+	height:14px;
+	background:url(../images/message_07.png) repeat-y  right;
+	text-align:right;
+}
+.msg-corner-bottom-middle
+{
+	height:14px;
+	background:url(../images/message_08.png) repeat-x;
+}
+.msg-corner-bottom-right
+{
+	width:14px;
+	height:14px;
+	background:url(../images/message_09.png) repeat-y;
+}
+.msg-validation-title
+{
+	color:#A71111;
+	font-size:13px;
+	font-weight:bold;
+	text-align:left;
+	line-height:35px;
+}
+.msg-validation-sub-title
+{
+	text-align:left;
+	padding-bottom:10px;
+}
+.errror-message
+{
+	background-image:url(../images/icons/bullet_red.png);
+	background-repeat:no-repeat;
+	background-position:2px 4px;
+	padding:2px 0px 2px 20px;
+	/*color:#E12700;*/
+	font-size:12px;
+}
+.msg-validation-img
+{
+	width:45px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+/*end of message css*/

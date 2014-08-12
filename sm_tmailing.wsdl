@@ -1,0 +1,1367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2007-2008 StrongMail Systems, Inc. All Rights Reserved.
+
+Visit http://www.strongmail.com for more information.
+Use of this software is subject to the StrongMail (TM) End User License Agreement.
+For more information review the EULA.txt that comes with the StrongMail (TM)
+
+The typical lifecycle of a transactional mailing is:
+
+Save > Load > Send, Send... [Pause > Resume] > [PauseOutbound > Save > ResumeOutbound] > Send... Close | Cancel
+
+
+API             Mailing State   
+========================================================================
+Save            None
+Load            ACTIVE
+Send            ACTIVE
+Pause           PAUSING > PAUSED
+Resume          ACTIVE
+PauseOutbound   PAUSINGOUTBOUND > PAUSEDOUTBOUND
+ResumeOutbound  ACTIVE
+Close           COMPLETING > COMPLETED
+Cancel          CANCELLED
+GetState        * (returns the mailing state)
+
+
+API             Description
+=======================================================================
+Save:           Creates a transactional mailing. The mailing is not
+        active at this point and will not accept Send requests until
+        it is explicitly activated using a Load request.
+
+Load:           Loads a transactional mailing into memory and activates
+        it. This enables the mailing to start accepting Send requests.
+        Changes the mailing state to ACTIVE.
+
+Send:           Sends one or more messages. It uses the mailing template
+        and other parameters specified in the Save request. A Send 
+        request can include multiple records. Multiple Send requests
+        can be sent successively.
+
+Pause:          Temporarily stops accepting new Send requests for the
+        specified mailing. Does not halt delivery of previously submitted
+        Send requests. Changes the mailing state to PAUSING which
+        then automatically transitions to PAUSED.
+
+Resume:         Resumes accepting new Send requests for the specified
+        mailing. Changes the mailing state to ACTIVE.
+
+PauseOutbound:  Temporarily stops personalization for the specified mailing.
+        However, continues to accept new Send requests and buffers them.
+        Changes the mailing state to PAUSINGOUTBOUND which then automatically
+        transitions to PAUSEDOUTBOUND. The mailing can be resaved with overwrite
+        option.
+
+ResumeOutbound: Resumes the personalization for the specified mailing.
+        Changes the mailing state to ACTIVE.
+
+Close:          Permanently stops accepting Send requests for the specified
+        mailing. Does not halt delivery of previously submitted Send 
+        requests. Changes the mailing request to COMPLETING which then 
+        automatically transitions to COMPLETED.
+
+Cancel:         Permanently stops accepting Send requests for the specified
+        mailing. Halts delivery of previously submitted Send requests.
+        Changes the mailing request to CANCELLED.
+
+GetState:       Returns the current state for the specified mailing.
+
+-->
+<definitions name="sm_tmailing"
+ targetNamespace="urn:TransactionalMailing"
+ xmlns:tns="urn:TransactionalMailing"
+ xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+ xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+ xmlns:ns="urn:TransactionalMailing"
+ xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/"
+ xmlns:MIME="http://schemas.xmlsoap.org/wsdl/mime/"
+ xmlns:DIME="http://schemas.xmlsoap.org/ws/2002/04/dime/wsdl/"
+ xmlns:WSDL="http://schemas.xmlsoap.org/wsdl/"
+ xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+<types>
+
+ <schema targetNamespace="urn:TransactionalMailing"
+  xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:ns="urn:TransactionalMailing"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="unqualified"
+  attributeFormDefault="unqualified">
+  <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+  <simpleType name="MailingStates">
+   <restriction base="xsd:string">
+    <enumeration value="ACTIVE"/><!-- enum const = 0 -->
+    <enumeration value="COMPLETING"/><!-- enum const = 1 -->
+    <enumeration value="COMPLETED"/><!-- enum const = 2 -->
+    <enumeration value="PAUSED"/><!-- enum const = 3 -->
+    <enumeration value="PAUSEDOUTBOUND"/><!-- enum const = 4 -->
+    <enumeration value="CANCELLED"/><!-- enum const = 5 -->
+    <enumeration value="PAUSING"/><!-- enum const = 6 -->
+    <enumeration value="PAUSINGOUTBOUND"/><!-- enum const = 7 -->
+   </restriction>
+  </simpleType>
+  <simpleType name="EASMTAStatus">
+   <restriction base="xsd:string">
+    <enumeration value="EAS-UP-NO-MTA"/><!-- enum const = 0 -->
+    <enumeration value="EAS-UP-WITH-CONNECTIONS-TO-MTA"/><!-- enum const = 1 -->
+   </restriction>
+  </simpleType>
+  <simpleType name="EASETLAgentStatus">
+   <restriction base="xsd:string">
+    <enumeration value="EAS-UP-NO-ETL-AGENT-FOUND"/><!-- enum const = 0 -->
+    <enumeration value="EAS-UP-ETL-AGENT-FOUND"/><!-- enum const = 1 -->
+   </restriction>
+  </simpleType>
+  <simpleType name="FormatType">
+   <restriction base="xsd:string">
+    <enumeration value="File"/><!-- enum const = 0 -->
+    <enumeration value="Data"/><!-- enum const = 1 -->
+   </restriction>
+  </simpleType>
+  <simpleType name="GenerationType">
+   <restriction base="xsd:string">
+    <enumeration value="None"/><!-- enum const = 0 -->
+    <enumeration value="Template"/><!-- enum const = 1 -->
+    <enumeration value="Xml"/><!-- enum const = 2 -->
+   </restriction>
+  </simpleType>
+  <simpleType name="Encoding">
+   <restriction base="xsd:string">
+    <enumeration value="SevenBit"/><!-- enum const = 0 -->
+    <enumeration value="EightBit"/><!-- enum const = 1 -->
+    <enumeration value="QuotedPrintable"/><!-- enum const = 2 -->
+    <enumeration value="Base64"/><!-- enum const = 3 -->
+   </restriction>
+  </simpleType>
+  <complexType name="AuthDetails">
+   <sequence>
+     <element name="UserName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Password" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="Exception">
+   <sequence>
+     <element name="Text" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="ConnectionError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="AuthenticationError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="MailingCreationError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="MailingOperationError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="VSGError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="FeatureUnavailabilityError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <!-- fault element type -->
+  <complexType name="DatabaseSpecificationError">
+   <complexContent>
+    <extension base="ns:Exception">
+     <sequence>
+     </sequence>
+    </extension>
+   </complexContent>
+  </complexType>
+  <complexType name="StringArray">
+   <sequence>
+     <element name="item" type="xsd:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="FileDetails">
+   <sequence>
+     <element name="FileName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Data" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Format" type="ns:FormatType" minOccurs="1" maxOccurs="1"/>
+     <element name="Overwrite" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="FileDataArray">
+   <sequence>
+     <element name="item" type="ns:FileDetails" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+  </complexType>
+  <complexType name="MessageData">
+   <sequence>
+     <element name="Headers" type="ns:StringArray" minOccurs="0" maxOccurs="1"/>
+     <element name="Body" type="ns:FileDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="XslContent" type="ns:FileDetails" minOccurs="0" maxOccurs="1"/>
+     <element name="ContentType" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="InputCharset" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="OutputCharset" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="GenerationType" type="ns:GenerationType" minOccurs="1" maxOccurs="1"/>
+     <element name="Encoding" type="ns:Encoding" minOccurs="0" maxOccurs="1" nillable="true"/>
+   </sequence>
+  </complexType>
+  <complexType name="MessageDataArray">
+   <sequence>
+     <element name="item" type="ns:MessageData" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+  </complexType>
+  <complexType name="MessageInformation">
+   <sequence>
+     <element name="File" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Type" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="MessageInformationArray">
+   <sequence>
+     <element name="item" type="ns:MessageInformation" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+  </complexType>
+  <complexType name="EmailDetails">
+   <sequence>
+     <element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Email" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="SchemaDetails">
+   <sequence>
+     <element name="Columns" type="ns:StringArray" minOccurs="1" maxOccurs="1"/>
+     <element name="Class" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="DatabasePath" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="SchemaDetailsArray">
+   <sequence>
+     <element name="item" type="ns:SchemaDetails" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+  </complexType>
+  <complexType name="LogDetails">
+   <sequence>
+     <element name="Success" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+     <element name="Failure" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+     <element name="FullSuccess" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+     <element name="FullFailure" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="SMPPMessageData">
+   <sequence>
+     <element name="Body" type="ns:FileDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="XslContent" type="ns:FileDetails" minOccurs="0" maxOccurs="1"/>
+     <element name="UseUCS2BOM" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+     <element name="InputCharset" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="OutputCharset" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="GenerationType" type="ns:GenerationType" minOccurs="1" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="SMPPMessageDataArray">
+   <sequence>
+     <element name="item" type="ns:SMPPMessageData" minOccurs="0" maxOccurs="unbounded"/>
+   </sequence>
+  </complexType>
+  <complexType name="SMPPTerminus">
+   <sequence>
+     <element name="TON" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="NPI" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="SMPPMailingDetails">
+   <sequence>
+     <element name="MessageId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="VirtualServerGroup" type="ns:StringArray" minOccurs="0" maxOccurs="1"/>
+     <element name="From" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="Schemas" type="ns:SchemaDetailsArray" minOccurs="1" maxOccurs="1"/>
+     <element name="ParameterSeparator" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="ParameterSetSeparator" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="RecipientParameter" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="UserIdColumn" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="MessageTemplates" type="ns:SMPPMessageDataArray" minOccurs="1" maxOccurs="1"/>
+     <element name="TokenFiles" type="ns:FileDataArray" minOccurs="0" maxOccurs="1"/>
+     <element name="Logging" type="ns:LogDetails" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="Id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="ServiceProvider" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="ReceiverTerminal" type="ns:SMPPTerminus" minOccurs="0" maxOccurs="1"/>
+     <element name="SenderTerminal" type="ns:SMPPTerminus" minOccurs="0" maxOccurs="1"/>
+     <element name="Priority" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="ReplaceUndelivered" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+     <element name="ScheduledDeliveryTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="WrapCDATA" type="ns:StringArray" minOccurs="0" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <complexType name="MailingDetails">
+   <sequence>
+     <element name="MessageId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="MailSubject" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="VirtualServerGroup" type="ns:StringArray" minOccurs="0" maxOccurs="1"/>
+     <element name="From" type="ns:EmailDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="ReplyTo" type="ns:EmailDetails" minOccurs="0" maxOccurs="1"/>
+     <element name="BounceAddress" type="ns:EmailDetails" minOccurs="0" maxOccurs="1"/>
+     <element name="Schemas" type="ns:SchemaDetailsArray" minOccurs="1" maxOccurs="1"/>
+     <element name="ParameterSeparator" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="ParameterSetSeparator" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="RecipientParameter" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="BCCEnable" type="xsd:boolean" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="CCAddressField" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="CCEnable" type="xsd:boolean" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="BCCAddressField" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="AddressDelimiter" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="UserIdColumn" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="OutputHeaderCharset" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="MessageHeaders" type="ns:StringArray" minOccurs="0" maxOccurs="1"/>
+     <element name="MessageTemplates" type="ns:MessageDataArray" minOccurs="1" maxOccurs="1"/>
+     <element name="Logging" type="ns:LogDetails" minOccurs="0" maxOccurs="1" nillable="true"/>
+     <element name="TokenFiles" type="ns:FileDataArray" minOccurs="0" maxOccurs="1"/>
+     <element name="Attachments" type="ns:FileDataArray" minOccurs="0" maxOccurs="1"/>
+     <element name="Id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="MessageFormatParameter" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+     <element name="WrapCDATA" type="ns:StringArray" minOccurs="0" maxOccurs="1"/>
+   </sequence>
+  </complexType>
+  <!-- operation request element -->
+
+  <!-- fault elements -->
+  <element name="AuthenticationError" type="tns:AuthenticationError"/>
+  <element name="ConnectionError" type="tns:ConnectionError"/>
+  <element name="DatabaseSpecificationError" type="tns:DatabaseSpecificationError"/>
+  <element name="Exception" type="tns:Exception"/>
+  <element name="FeatureUnavailabilityError" type="tns:FeatureUnavailabilityError"/>
+  <element name="MailingCreationError" type="tns:MailingCreationError"/>
+  <element name="MailingOperationError" type="tns:MailingOperationError"/>
+  <element name="VSGError" type="tns:VSGError"/>
+
+  <!-- operation request element -->
+  <element name="Load">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Class" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="LoadResponse">
+   <complexType>
+    <sequence>
+     <element name="SerialNumber" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="Resume">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="ResumeResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="Pause">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="PauseResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="ResumeOutbound">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="ResumeOutboundResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="PauseOutbound">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="PauseOutboundResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="Cancel">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="CancelResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="Close">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="CloseResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="GetState">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="GetStateResponse">
+   <complexType>
+    <sequence>
+     <element name="State" type="ns:MailingStates" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="Send">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Records" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="SendResponse">
+   <complexType>
+    <sequence>
+     <element name="DatabaseId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Count" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="Credentials" type="ns:AuthDetails"/>
+  <!-- operation response element -->
+  <element name="SimpleMTAState" type="ns:EASMTAStatus"/>
+  <!-- operation response element -->
+  <element name="SimpleETLState" type="ns:EASETLAgentStatus"/>
+  <!-- operation response element -->
+  <element name="Result" type="xsd:long"/>
+  <!-- operation request element -->
+  <element name="Save">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    <choice>
+     <element name="SMTPMailing" type="ns:MailingDetails" minOccurs="1" maxOccurs="1" nillable="false"/>
+     <element name="SMPPMailing" type="ns:SMPPMailingDetails" minOccurs="1" maxOccurs="1" nillable="false"/>
+    </choice>
+     <element name="Overwrite" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="SaveResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="GetStatus">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+    <choice>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+     <element name="SerialNumber" type="xsd:long" minOccurs="1" maxOccurs="1" nillable="false"/>
+    </choice>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="GetStatusResponse">
+   <complexType>
+    <sequence>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="SerialNumber" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="State" type="ns:MailingStates" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingID" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="StartTime" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="EndTime" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="ElapsedTime" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="LastRestartTime" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="Restarts" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="TotalDatabaseRecords" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="MessagesDelivered" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="MessagesFailed" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="MessagesDeferred" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+     <element name="MessagesInvalid" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="GetServiceStatus">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="GetServiceStatusResponse">
+   <complexType>
+    <sequence>
+     <element name="SMClientStatus" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+     <element name="SMETLAgentStatus" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation request element -->
+  <element name="SetStrategy">
+   <complexType>
+    <sequence>
+     <element name="Credentials" type="ns:AuthDetails" minOccurs="1" maxOccurs="1"/>
+     <element name="MailingName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="szStrategy" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+     <element name="szArgs" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+  <!-- operation response element -->
+  <element name="SetStrategyResponse">
+   <complexType>
+    <sequence>
+     <element name="Result" type="xsd:long" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+   </complexType>
+  </element>
+ </schema>
+
+</types>
+
+<message name="LoadRequest">
+ <part name="parameters" element="ns:Load"/>
+</message>
+
+<message name="LoadResponse">
+ <part name="parameters" element="ns:LoadResponse"/>
+</message>
+
+<message name="ResumeRequest">
+ <part name="parameters" element="ns:Resume"/>
+</message>
+
+<message name="ResumeResponse">
+ <part name="parameters" element="ns:ResumeResponse"/>
+</message>
+
+<message name="PauseRequest">
+ <part name="parameters" element="ns:Pause"/>
+</message>
+
+<message name="PauseResponse">
+ <part name="parameters" element="ns:PauseResponse"/>
+</message>
+
+<message name="ResumeOutboundRequest">
+ <part name="parameters" element="ns:ResumeOutbound"/>
+</message>
+
+<message name="ResumeOutboundResponse">
+ <part name="parameters" element="ns:ResumeOutboundResponse"/>
+</message>
+
+<message name="PauseOutboundRequest">
+ <part name="parameters" element="ns:PauseOutbound"/>
+</message>
+
+<message name="PauseOutboundResponse">
+ <part name="parameters" element="ns:PauseOutboundResponse"/>
+</message>
+
+<message name="CancelRequest">
+ <part name="parameters" element="ns:Cancel"/>
+</message>
+
+<message name="CancelResponse">
+ <part name="parameters" element="ns:CancelResponse"/>
+</message>
+
+<message name="CloseRequest">
+ <part name="parameters" element="ns:Close"/>
+</message>
+
+<message name="CloseResponse">
+ <part name="parameters" element="ns:CloseResponse"/>
+</message>
+
+<message name="GetState">
+ <part name="parameters" element="ns:GetState"/>
+</message>
+
+<message name="GetStateResponse">
+ <part name="parameters" element="ns:GetStateResponse"/>
+</message>
+
+<message name="Send">
+ <part name="parameters" element="ns:Send"/>
+</message>
+
+<message name="SendResponse">
+ <part name="parameters" element="ns:SendResponse"/>
+</message>
+
+
+
+
+
+<message name="SaveRequest">
+ <part name="parameters" element="ns:Save"/>
+</message>
+
+<message name="SaveResponse">
+ <part name="parameters" element="ns:SaveResponse"/>
+</message>
+
+
+
+<message name="GetStatus">
+ <part name="parameters" element="ns:GetStatus"/>
+</message>
+
+<message name="GetStatusResponse">
+ <part name="parameters" element="ns:GetStatusResponse"/>
+</message>
+
+<message name="GetServiceStatus">
+ <part name="parameters" element="ns:GetServiceStatus"/>
+</message>
+
+<message name="GetServiceStatusResponse">
+ <part name="parameters" element="ns:GetServiceStatusResponse"/>
+</message>
+
+<message name="SetStrategyRequest">
+ <part name="parameters" element="ns:SetStrategy"/>
+</message>
+
+<message name="SetStrategyResponse">
+ <part name="parameters" element="ns:SetStrategyResponse"/>
+</message>
+
+<message name="AuthenticationErrorFault">
+ <part name="fault" element="ns:AuthenticationError"/>
+</message>
+
+<message name="ConnectionErrorFault">
+ <part name="fault" element="ns:ConnectionError"/>
+</message>
+
+<message name="ExceptionFault">
+ <part name="fault" element="ns:Exception"/>
+</message>
+
+<message name="DatabaseSpecificationErrorFault">
+ <part name="fault" element="ns:DatabaseSpecificationError"/>
+</message>
+
+<message name="FeatureUnavailabilityErrorFault">
+ <part name="fault" element="ns:FeatureUnavailabilityError"/>
+</message>
+
+<message name="VSGErrorFault">
+ <part name="fault" element="ns:VSGError"/>
+</message>
+
+<message name="MailingOperationErrorFault">
+ <part name="fault" element="ns:MailingOperationError"/>
+</message>
+
+<message name="MailingCreationErrorFault">
+ <part name="fault" element="ns:MailingCreationError"/>
+</message>
+
+<portType name="sm_tmailingPortType">
+ <operation name="Load">
+  <documentation>Service definition of function ns__Load</documentation>
+  <input message="tns:LoadRequest"/>
+  <output message="tns:LoadResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="Resume">
+  <documentation>Service definition of function ns__Resume</documentation>
+  <input message="tns:ResumeRequest"/>
+  <output message="tns:ResumeResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="Pause">
+  <documentation>Service definition of function ns__Pause</documentation>
+  <input message="tns:PauseRequest"/>
+  <output message="tns:PauseResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="ResumeOutbound">
+  <documentation>Service definition of function ns__ResumeOutbound</documentation>
+  <input message="tns:ResumeOutboundRequest"/>
+  <output message="tns:ResumeOutboundResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="PauseOutbound">
+  <documentation>Service definition of function ns__PauseOutbound</documentation>
+  <input message="tns:PauseOutboundRequest"/>
+  <output message="tns:PauseOutboundResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="Cancel">
+  <documentation>Service definition of function ns__Cancel</documentation>
+  <input message="tns:CancelRequest"/>
+  <output message="tns:CancelResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="Close">
+  <documentation>Service definition of function ns__Close</documentation>
+  <input message="tns:CloseRequest"/>
+  <output message="tns:CloseResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="GetState">
+  <documentation>Service definition of function ns__GetState</documentation>
+  <input message="tns:GetState"/>
+  <output message="tns:GetStateResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="Send">
+  <documentation>Service definition of function ns__Send</documentation>
+  <input message="tns:Send"/>
+  <output message="tns:SendResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="Save">
+  <documentation>Service definition of function ns__Save</documentation>
+  <input message="tns:SaveRequest"/>
+  <output message="tns:SaveResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="GetStatus">
+  <documentation>Service definition of function ns__GetStatus</documentation>
+  <input message="tns:GetStatus"/>
+  <output message="tns:GetStatusResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="GetServiceStatus">
+  <documentation>Service definition of function ns__GetServiceStatus</documentation>
+  <input message="tns:GetServiceStatus"/>
+  <output message="tns:GetServiceStatusResponse"/>
+  <fault name="DatabaseSpecificationError" message="tns:DatabaseSpecificationErrorFault"/>
+  <fault name="FeatureUnavailabilityError" message="tns:FeatureUnavailabilityErrorFault"/>
+  <fault name="VSGError" message="tns:VSGErrorFault"/>
+  <fault name="MailingOperationError" message="tns:MailingOperationErrorFault"/>
+  <fault name="MailingCreationError" message="tns:MailingCreationErrorFault"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+ <operation name="SetStrategy">
+  <documentation>Service definition of function ns__SetStrategy</documentation>
+  <input message="tns:SetStrategyRequest"/>
+  <output message="tns:SetStrategyResponse"/>
+  <fault name="AuthenticationError" message="tns:AuthenticationErrorFault"/>
+  <fault name="ConnectionError" message="tns:ConnectionErrorFault"/>
+  <fault name="Exception" message="tns:ExceptionFault"/>
+ </operation>
+</portType>
+
+<binding name="sm_tmailing" type="tns:sm_tmailingPortType">
+ <SOAP:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+ <operation name="Load">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="Resume">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="Pause">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="ResumeOutbound">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="PauseOutbound">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="Cancel">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="Close">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="GetState">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="Send">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="Save">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="GetStatus">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="GetServiceStatus">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="DatabaseSpecificationError">
+   <SOAP:fault name="DatabaseSpecificationError" use="literal"/>
+  </fault>
+  <fault name="FeatureUnavailabilityError">
+   <SOAP:fault name="FeatureUnavailabilityError" use="literal"/>
+  </fault>
+  <fault name="VSGError">
+   <SOAP:fault name="VSGError" use="literal"/>
+  </fault>
+  <fault name="MailingOperationError">
+   <SOAP:fault name="MailingOperationError" use="literal"/>
+  </fault>
+  <fault name="MailingCreationError">
+   <SOAP:fault name="MailingCreationError" use="literal"/>
+  </fault>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+ <operation name="SetStrategy">
+  <SOAP:operation style="document" soapAction=""/>
+  <input>
+     <SOAP:body parts="parameters" use="literal"/>
+  </input>
+  <output>
+     <SOAP:body parts="parameters" use="literal"/>
+  </output>
+  <fault name="AuthenticationError">
+   <SOAP:fault name="AuthenticationError" use="literal"/>
+  </fault>
+  <fault name="ConnectionError">
+   <SOAP:fault name="ConnectionError" use="literal"/>
+  </fault>
+  <fault name="Exception">
+   <SOAP:fault name="Exception" use="literal"/>
+  </fault>
+ </operation>
+</binding>
+
+<service name="sm_tmailing">
+ <documentation>Transactional Mailing Web Service Definition</documentation>
+ <port name="sm_tmailing" binding="tns:sm_tmailing">
+  <SOAP:address location="http://64.58.70.120:9000/SOAP/sm_tmailing"/>
+ </port>
+</service>
+
+</definitions>

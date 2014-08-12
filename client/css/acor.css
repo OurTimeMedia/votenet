@@ -1,0 +1,74 @@
+.glossymenu{
+font-family:Arial;
+font-size:12px;
+width:270px;
+float:left;
+height:auto;
+}
+
+.glossymenu a.menuitem{
+color: #616161;
+font-family:Arial;
+font-size:12px;
+display: block;
+position: relative; /*To help in the anchoring of the ".statusicon" icon image*/
+width: auto;
+padding:0 0 0 40px;
+text-decoration: none;
+margin:5px 0 0 0;
+}
+
+.glossymenu a.menuitem:visited, .glossymenu a.menuitem:active{
+ color:#616161; 
+}
+
+.glossymenu a.menuitem .statusicon{ /*CSS for icon image that gets dynamically added to headers*/
+position: absolute;
+left:5px;
+top:9px;
+border: none;
+color:#616161;
+width:32px;
+height:27px;
+cursor:pointer;
+}
+
+.glossymenu a.menuitem:hover{
+font-family:Arial;
+font-size:12px;
+ color:#616161;
+}
+
+.glossymenu div.submenu-main{ /*DIV that contains each sub menu*/
+position:relative;
+ top:-14px;
+}
+
+.glossymenu div.submenu{ /*DIV that contains each sub menu*/
+position:inherit;
+}
+.api-key{ font-size:24px; color:#3e7cbb; letter-spacing:3px; font-weight:bold;}
+.glossymenu div.submenu ul{ /*UL of each sub menu*/
+list-style-type: none;
+width:238px;
+margin: 0;
+padding: 20px 15px 0 15px;
+ border-left:1px solid #0572b9; border-right:1px solid #0572b9;
+}
+
+
+.glossymenu div.submenu ul li{
+margin:0; list-style:none; padding-bottom:10px; border-bottom:1px dashed #999;
+vertical-align:middle; padding-top:10px;
+font-size:13px;
+}
+
+.glossymenu div.submenu ul li a{text-decoration:underline;
+}
+
+.glossymenu div.submenu ul li a:hover{text-decoration:none;
+}
+
+.glossymenu div.submenu ul li a#act2{
+ color:#FFFFFF; text-decoration:none; font-size:13px;
+}

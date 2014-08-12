@@ -1,0 +1,55 @@
+<map showShadow='0' showMarkerLabels='0' fillColor='b0e0ff' borderColor='8accf6' connectorColor='FFFFFF' hoverColor='ff4858' canvasBorderColor='FFFFFF' baseFont='Arial' baseFontSize='11' baseFontColor='000' markerBorderColor='000000' markerBgColor='FF5904' markerRadius='6' legendPosition='bottom' useHoverColor='1' showMarkerToolTip='1'  >
+	<data>
+		<entity id='AL' value="155" />
+		<entity id='AK' link='http://www.google.com/'  />
+		<entity id='AZ'  value="222" />
+		<entity id='AR'  />
+		<entity id='CA'  />
+		<entity id='CO'  />
+		<entity id='CT'  />
+		<entity id='DE'  />
+		<entity id='FL'  />
+		<entity id='GA'  />
+		<entity id='HI'  />
+		<entity id='ID'  />
+		<entity id='IL'  />
+		<entity id='IN'  />
+		<entity id='IA'  />
+		<entity id='KS'  />
+		<entity id='KY'  />
+		<entity id='LA'  />
+		<entity id='ME'  />
+		<entity id='MD'  />
+		<entity id='MA'  />
+		<entity id='MI'  />
+		<entity id='MN'  />
+		<entity id='MS'  />
+		<entity id='MO'  />
+		<entity id='MT'  />
+		<entity id='NE'  />
+		<entity id='NV'  />
+		<entity id='NH'  />
+		<entity id='NJ'  />
+		<entity id='NM'  />
+		<entity id='NY'  />
+		<entity id='NC'  />
+		<entity id='ND'  />
+		<entity id='OH'  />
+		<entity id='OK'  />
+		<entity id='OR'  />
+		<entity id='PA'  />
+		<entity id='RI'  />
+		<entity id='SC'  />
+		<entity id='SD'  />
+		<entity id='TN'  />
+		<entity id='TX'  />
+		<entity id='UT'  />
+		<entity id='VT'  />
+		<entity id='VA'  />
+		<entity id='WA'  />
+		<entity id='WV'  />
+		<entity id='WI'  />
+		<entity id='WY'  />
+		<entity id='DC'  />
+	</data>
+</map>

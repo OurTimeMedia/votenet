@@ -1,0 +1,12 @@
+<strongmail-client username="strongmail" password="strongmail" context="mailing" action="start">
+	<mailing file="/sample/mailing.cfg"></mailing>
+</strongmail-client>
+
+
+<!--
+<strongmail-client response="1">
+	<mailing file="/sample/mailing.cfg" serial="112233">
+	<status code="1">Active</status>
+</mailing>
+</strongmail-client>
+-->

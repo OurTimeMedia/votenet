@@ -1,0 +1,15 @@
+<strongmail-client username="strongmail" password="strongmail"
+ context="mailing" action="schedule">
+	<mailing file="/sample/mailing.cfg">
+		<datetime>8/25/03 23:15</datetime>
+</mailing>
+</strongmail-client>
+
+
+<!--
+<strongmail-client response="1">
+	<mailing file="/sample/mailing.cfg">
+	<status code="5">Scheduled</status>
+</mailing>
+</strongmail-client>
+-->

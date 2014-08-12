@@ -1,0 +1,422 @@
+@charset "utf-8";
+/* CSS Document */
+
+html {
+	height:100%;
+}
+h1, h2 {
+	padding:0;
+	margin:0;
+}
+body {
+	background:url(../images/main-bg.png) left top repeat-x #5a96bd;
+	font-family:Verdana, Tahoma;
+	font-size:12px;
+	height:100%;
+	margin:0; padding:0;
+}
+ul {
+	list-style:none;
+}
+h1 {
+	color:#ffffff; font-size:28px;
+}
+h1 span {
+	font-size:13px; font-weight:bold;
+}
+.header td {
+	color:#FFF;
+}
+img
+{	border:0; vertical-align:middle;
+}
+a {
+	color:#ffffff; font-size:12px; font-family:Verdana, Tahoma; text-decoration:underline; outline:none;
+}
+a:hover {
+	text-decoration:none; color:#f7b642;
+}
+.link {
+	color:#333399; font-size:12px; font-family:Verdana, Tahoma; text-decoration:none; outline:none;
+}
+.link:hover {
+	text-decoration:none; color:#f7b642;
+}
+.textbox /* input[type='password'], select, textarea */
+{	background:#ffffff; border:1px solid #CCC;
+	font-size:13px; font-family:Verdana, Tahoma; color:#666666;
+	padding:3px;
+}
+.selectbox
+{	background:#ffffff; border:1px solid #CCC;
+	font-size:13px; font-family:Verdana, Tahoma; color:#666666;
+	padding:3px;
+}
+
+/*Button Classes */
+.button  /*,input[type='button'], input[type='submit']*/
+{	background:url(../images/btnbg.png) repeat-x; border:1px solid #7bae42; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+}
+.button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/btnbg-hover.png) repeat-x;
+}
+
+.search-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/search-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:90px;
+	height:26px;
+}
+.search-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/search-button-hover.png) repeat-x;
+}
+
+.reset-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/reset-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:80px;
+	height:26px;
+}
+.reset-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/reset-button-hover.png) repeat-x;
+}
+.new-record-button {
+ 	background: url("../images/new-record-button.png") repeat-x scroll 0 0 transparent;
+    /*border: 1px solid #7bae42;*/
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+	padding:4px 10px 4px 27px;	
+	text-decoration:none;
+	float:right;
+	width:auto;
+	height:18px;
+	
+}
+.new-record-button:hover {
+	background:url(../images/new-record-button-hover.png) repeat-x;	
+	color:#FFFFFF;
+}
+
+.delete-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/delete-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:82px;
+	height:26px;
+}
+.delete-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/delete-button-hover.png) repeat-x;
+}
+
+.export-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/export-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:140px;
+	height:26px;
+}
+.export-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/export-button-hover.png) repeat-x;
+}
+
+.save-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/save-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:72px;
+	height:26px;
+}
+.save-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/save-button-hover.png) repeat-x;
+}
+
+.back-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/back-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:65px;
+	height:26px;
+}
+.back-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/back-button-hover.png) repeat-x;
+}
+
+.submit-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/submit-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:86px;
+	height:26px;
+}
+.submit-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/submit-button-hover.png) repeat-x;
+}
+
+.cancel-button  /*,input[type='button'], input[type='submit'] #7bae42*/
+{	background:url(../images/cancel-button.png) repeat-x; border:0px solid; color:#FFFFFF;
+	font-family:Verdana, Tahoma; font-size:13px; padding:3px 10px; font-weight:bold;
+	cursor:pointer;
+	width:83px;
+	height:26px;
+}
+.cancel-button:hover /*,input[type='button']:hover, input[type='submit']:hover*/
+{	background:url(../images/cancel-button-hover.png) repeat-x;
+}
+
+/*Button Classes */
+.loginbox {
+	color:#333333;
+	margin:0 auto;
+	width:459px; height:247px;
+	background:url(../images/loginbg.png) no-repeat;
+}
+.loginbox2
+{	width:320px; margin:0 auto; padding-top:55px;
+}
+
+.menu {
+	background:#ffffff;
+	border:4px solid #a5a5a5;
+}
+.menu ul
+{	margin:0; padding:15px 0 15px 0;
+}
+.menu li
+{	margin:0; padding:0 10px;
+}
+.menu a
+{	color:#0d3a61; text-decoration:none; font-weight:bold;
+	padding:5px 0; border-bottom:1px solid #858585; display:block;
+}
+.menu a:hover
+{	color:#333;
+}
+
+.content
+{	padding:10px 20px 20px 20px;
+}
+.main-content {	
+	background:#ffffff;
+	border:2px solid #dedede;
+}
+.box-heading {
+	background:url(../images/heading-bg.png) left top repeat-x; text-align:left;
+	padding:5px 0px 7px 10px; border-bottom:1px solid #CCCCCC;
+}
+.box-heading h2 {
+	color:#000000; font-size:24px; font-family:Verdana, Tahoma; font-weight:normal;
+	text-align:left;
+}
+.dashboard
+{	padding:10px;
+}
+.dashboard div {
+	width:120px;
+	height:120px;
+	padding:10px; text-align:center;
+	background:#f8f8f8;
+	border:solid 4px #eee;
+	float:left;
+	margin:5px;
+	overflow:hidden;
+}
+.dashboard div:hover {
+	border:solid 4px #333;
+}
+.dashboard div img
+{	margin:10px 0;
+}
+.dashboard div a
+{	color:#135ca0; font-size:13px; font-family:Verdana, Tahoma; text-decoration:none;
+	display:block; height:100%; width:100%;
+}
+.dashboard div a:hover
+{	color:#333; text-decoration:none;
+}
+/* CSS FOR MESSAGE/VALIDATION */
+.msg-table-error {
+	font-family:Tahoma, Geneva, sans-serif;
+	width:100%;
+	background:#f8dede;
+	border-top:solid 3px #faa7a8;
+	border-bottom:solid 3px #faa7a8;
+}
+.msg-error-img {
+	width:45px;
+	height:30px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+.msg-error-title {
+	color:#A71111;
+	font-size:13px;
+	font-weight:bold;
+	text-align:left;
+}
+.msg-error-sub-title {
+	padding-top:4px;
+	padding-bottom:4px;
+	color:#000;
+	text-align:left;
+	font-size:12px;
+}
+.msg-table-info {
+	width:100%;
+	font-family:Tahoma, Geneva, sans-serif;
+	background:#E3F7DB;
+	border-top:solid 3px #61A600;
+	border-bottom:solid 3px #61A600;
+}
+.msg-info-img {
+	width:45px;
+	height:30px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+.msg-info-title {
+	font-size:13px;
+	font-weight:bold;
+	color:#50960A;
+	text-align:left;
+}
+.msg-info-sub-title {
+	padding-top:4px;
+	padding-bottom:4px;
+	color:#000;
+	text-align:left;
+	font-size:12px;
+}
+.msg-validation-title {
+	color:#A71111;
+	font-size:13px;
+	font-weight:bold;
+	text-align:left;
+}
+.msg-validation-sub-title {
+	text-align:left;
+}
+.errror-message {
+	background-image:url(../images/bullet_red.png);
+	background-repeat:no-repeat;
+	background-position:2px 4px;
+	padding:2px 0px 2px 20px;
+	color:#CC0000;
+	font-size:12px;
+}
+.msg-validation-img {
+	width:45px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+/* END CSS FOR MESSAGE/VALIDATION */
+
+.content-background {
+	background:none;
+}
+.header-main {
+	background:none;
+	color:#ffffff;
+}
+.footer-main
+{	color:#ffffff; text-align:center;
+}
+.padding-left-right
+{	padding:0 20px;
+}
+.red-text
+{	color:#CC0000; font-size:12px; font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+.frmmn label
+{	font-size:12px; font-weight:bold; color:#333; padding:3px 10px 0 0px; display:block; text-align:right;
+}
+.frmmn input[type='text'], input[type='password'], .frmmn textarea
+{	width:250px;
+}
+.frmmn select
+{	width:260px;
+}
+.listmn
+{	border-left:1px solid #dedede; border-top:1px solid #dedede;
+}
+.listmn tr
+{	
+}
+.listmn th
+{	border-right:1px solid #dedede; 
+	padding:6px; background:url(../images/btnbg-hover.png) repeat-x #474747;
+	font-size:13px;
+	color:#ffffff;
+}
+.listmn td
+{	border-right:1px solid #dedede; border-bottom:1px solid #dedede;
+	padding:5px 10px; color:#000;
+}
+.listmn td a
+{	color:#000;
+}
+.background1
+{	background:#f9f9f9;
+}
+.background1:hover, .background2:hover
+{	background:#f1f1f1;
+}
+.required-sentence {
+	color:#333333;
+	font-weight:bold;
+	padding-right:10px;	
+}
+.paging-panel, .search-panel {
+	color:#000000;
+}
+
+.view-table label {
+	padding-top:0;
+}
+
+/* extra class
+
+.txt18
+{	color:#333333; font-size:18px; font-weight:normal;
+}
+
+.padall
+{	padding:10px;
+}
+*/
+.menumnt
+{	float:left; margin:0; padding:7px 10px 0 5px;
+}
+.menumnt li
+{	float:left; margin-right:5px; padding-left:8px;
+}
+.menumnt li a
+{	float:left; padding-right:0px; padding:8px 10px 0 10px;
+	height:24px; font-weight:bold; color:#ffffff; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;
+	text-decoration:none;
+}
+.menumnt li a:hover
+{	color:#ffffff; background:url(../images/m-hover.png) left top repeat-x;
+}
+
+.menumnt li a.act
+{	color:#ffffff; background:url(../images/m-hover.png) left top repeat-x;
+}
+
+.menu-div {
+	padding:0;	
+}
+
+.header-div {
+	padding-top:20px; padding-bottom:12px;	
+}
+.attachment  {
+	color:#06F; font-size:12px; font-family:Verdana, Tahoma; font-weight:bolder; text-decoration:none ; outline:none;!important;
+}

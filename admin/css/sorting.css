@@ -1,0 +1,41 @@
+
+div#divSoringContainer {
+	width: 100%;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+#divSoringContainer ul {
+	padding: 0px;
+	margin: 0px;
+}
+
+div#divSoringContainer li {
+	list-style: none;
+	padding:10px;
+	cursor: move;
+	background: url("../images/move.png") no-repeat scroll right top #EEF6FF;
+	margin: 2px;
+}
+
+div#imageContainer {
+	margin-left: 75px;
+}
+
+div#imageContainer img {
+	cursor: move;
+	display: block;
+	margin: 5px 0px;
+	border: 1px solid #000000;
+}
+
+div#imageFloatContainer {
+	width: 600px;
+	border: 1px solid #000000;
+}
+
+div#imageFloatContainer img {
+	float: left;
+	margin: 10px;
+	border: 1px solid #000000;
+}
