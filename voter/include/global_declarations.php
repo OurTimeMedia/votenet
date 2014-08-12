@@ -1,4 +1,11 @@
 <?php
+// Define app environment
+$env = getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production';
+
+defined('APPLICATION_ENV') || define('APPLICATION_ENV', $env);
+// end define app environment
+
+
 define("DB_PREFIX","ei_");
 
 define('DMYT12',"d/m/Y h:i:s A");
