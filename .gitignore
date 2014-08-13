@@ -1,5 +1,5 @@
 .idea
 .DS_Store
-library/dwoo/compiled/*
 vendor/*
+library/dwoo/compiled/*
 common/files/voter_pdf/*
