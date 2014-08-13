@@ -3,7 +3,10 @@ error_reporting(E_ALL);
 
 switch (APPLICATION_ENV) {
     case 'production':
-        die ('Add production credentials');
+        $dbHost = "production-vote.cqr7kxw13zis.us-west-1.rds.amazonaws.com";
+        $dbName = "votenet-production";
+        $dbUsername = "voteuser";
+        $dbPassword = "qFS3!lTKkL5j";
         break;
     case 'staging':
         $dbHost = "staging-vote.cqr7kxw13zis.us-west-1.rds.amazonaws.com";
