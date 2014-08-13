@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 
 switch (APPLICATION_ENV) {
     case 'production':
@@ -16,6 +17,7 @@ switch (APPLICATION_ENV) {
         $dbUsername = "root";
         $dbPassword = "123456";
         date_default_timezone_set('America/Chicago');
+        error_reporting (E_ALL^E_NOTICE);
         break;
     default:
         die ('Application environment is not defined');
@@ -26,6 +28,4 @@ $link = mysql_connect($dbHost, $dbUsername, $dbPassword);
 mysql_select_db($dbName);
 
 $sestime = 1000;
-
-error_reporting(E_ALL);
 ?>

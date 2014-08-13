@@ -64,7 +64,7 @@ foreach ($pdfValues as $pdfValue)  {
      * 17 - Phone No
      */
     if (in_array($fieldMappingID, array(5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17))) {
-        $value = SetaPDF_Core_Encoding::convert($value, 'UTF-8', 'UTF-16BE');
+        //$value = SetaPDF_Core_Encoding::convert($value, 'UTF-8', 'UTF-16BE');
         $fields[$fieldName]->setValue($value);
     }
     /**
@@ -81,7 +81,6 @@ foreach ($pdfValues as $pdfValue)  {
     }
 
 }
-
 
 $document->save()->finish();
 
