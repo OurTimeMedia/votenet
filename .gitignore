@@ -1,3 +1,5 @@
 .idea
 .DS_Store
 library/dwoo/compiled/*
+vendor/*
+common/files/voter_pdf/*

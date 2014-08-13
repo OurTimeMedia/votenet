@@ -1,0 +1,11 @@
+{
+    "require": {
+        "setasign/setapdf-formfiller_full": "2.4.0.637"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://www.setasign.com/downloads/"
+        }
+    ]
+}
