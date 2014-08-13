@@ -22,6 +22,7 @@ if($_SERVER['HTTP_X_FORWARDED_PROTO']!="https")
 define("SERVER_ROOT",$_SERVER['DOCUMENT_ROOT']."/");
 define("SERVER_HOST","http://".$_SERVER['HTTP_HOST']."/");
 define("SERVER_ADMIN_HOST","http://".$_SERVER['HTTP_HOST']."/voter/");
+define("SERVER_VOTER_HOST","http://".$_SERVER['HTTP_HOST']."/voter/");
 define("SERVER_VOTER_ROOT",$_SERVER['DOCUMENT_ROOT']."/voter/");
 define("SERVER_CLIENT_HOST","http://".$_SERVER['HTTP_HOST']."/client/");
 
