@@ -41,19 +41,6 @@
         <a href="election_dates.php?keepThis=true&TB_iframe=true&height=450&width=545"  class="thickbox">View Key Dates and Deadline</a></div>      
     </div>
     </div>
-	<div style="width:100%; float:left;">
-	<div class="facebook">Help Us Spread the Word:</div>
-		<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=323953510985672";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-		
-      <div class="fb-like" data-href="https://www.electionimpact.com" data-send="false" data-width="720" data-show-faces="false"></div>
-	</div>
 </div>
 <script type="text/javascript">
 function validate()

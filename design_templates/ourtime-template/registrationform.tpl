@@ -46,22 +46,7 @@
         <a href="election_dates.php?keepThis=true&TB_iframe=true&height=470&width=545"  class="thickbox">{$LANG_VIEW_KEY_DATES_AND_DEADLINES_TEXT}</a></div>      
     </div>
     </div>
-	{if $mobile_device}
-	{else}
-	<div class="contentmain">	
-	<div class="facebook">{$LANG_HELP_US_SPREAD_THE_WORD}:</div>
-		<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=209440782426123";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-	    
-	  <div class="fb-like" data-href="{$site_domain_link}" data-send="false" data-width="720" data-show-faces="false"></div>
-	</div>  
-	{/if}{/if}
+{/if}
 </div>
 <script type="text/javascript">
 function validate()

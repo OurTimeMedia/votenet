@@ -66,11 +66,12 @@ color: #{$nav_text_color};
 {if $hide_navigation == "1"}
 <style type="text/css">
 #container, #content-main, #slider, #footer {
-width:820px;
+    width:820px;
+    padding: 5px 0;
 }
 
 #content{
-margin: 0 5px 10px;
+    margin: 0 5px 10px;
 }
 </style>
 {/if}

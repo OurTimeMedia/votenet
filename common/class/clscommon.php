@@ -1149,7 +1149,7 @@ class common
 	
 	function getCurrentPageName()
 	{
-		$arPg = split("/",$_SERVER['PHP_SELF']);
+		$arPg = explode("/",$_SERVER['PHP_SELF']);
 		$lastIndex = count($arPg)-1;
 		$pgName = substr($arPg[$lastIndex],0,strlen($arPg[$lastIndex])-4);
 		
@@ -1239,12 +1239,12 @@ class common
 			$str  =  str_replace(">","&gt;",$str);*/
 			
 			// commented as it replaces other fonts too and replaces with ? (question marks) 
-			/*$str  =  str_replace("“", "\"", $str); 
-			$str  =  str_replace("”", "\"", $str); 
-			$str  =  str_replace("’", "'", $str); 
+			/*$str  =  str_replace("ï¿½", "\"", $str); 
+			$str  =  str_replace("ï¿½", "\"", $str); 
+			$str  =  str_replace("ï¿½", "'", $str); 
 
 			$str  =  str_replace("â€œ", "\"", $str); 
-			$str  =  str_replace("â€?", "\"", $str); 
+			$str  =  str_replace("ï¿½?", "\"", $str); 
 			$str  =  str_replace("â€™", "'", $str); */
 
 			$str  =  mysql_real_escape_string($str);
