@@ -1,56 +1,56 @@
-<?php 
+<?php
 	set_time_limit(0);
 	require_once (COMMON_CLASS_DIR ."clscommon.php");
 	$cmn = new common();
-	
+
 	$language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 
 	$domain = $_REQUEST['domain'];
 	$stateid=$cmn->getSession('Home_State_ID');
 	$languageid=$cmn->getSession('voter_language_id');
-	
+
 	require_once (COMMON_CLASS_DIR ."clsregistration_deadline.php");
 	$condition=" and state_id=".$stateid;
 	$objregistration_deadline= new registration_deadline();
 	$registration_deadline=$objregistration_deadline->fetchAllAsArray($stateid,$condition);
 	require_once (COMMON_CLASS_DIR ."clseligibility_state.php");
-	
+
 	$objeligibility_state= new eligibility_state();
 	$eligibility_criteria=$objeligibility_state->fetchstatewiseAsArray($stateid,$languageid);
-	
+
 	$objWebsite = new website();
 	$condition = " AND domain='".$domain."' ";
 	$client_id = $objWebsite->fieldValue("client_id","",$condition);
-	
+
 	require_once (COMMON_CLASS_DIR ."clselection_date.php");
 	$objElectionDate = new election_date();
-		
+
 	$objState=new state();
-	
+
 	$condFirstElection = " AND election_date >= '".currentScriptDateOnly()."' AND state_id = '".$stateid."' ";
 	$firstElectionDate = $objElectionDate->getFirstElectionDate($condFirstElection);
-		
+
 	require_once (COMMON_CLASS_DIR ."clsform.php");
 	$objForm = new form();
 	$conditionForm = " AND client_id = '".$client_id."' ";
 	$objForm->setallvalues("", $conditionForm);
-	
+
 	if($objForm->form_background == "" )
 	{
 		$objForm = new form();
 		$conditionForm = " AND client_id = '0' ";
 		$objForm->setallvalues("", $conditionForm);
 	}
-	
+
 	$formcss = "";
 	if($objForm->form_background != "" )
 	{
 		$formcss.= "#tblform h2 { background:"."#".str_replace("#","",$objForm->form_background).";}\n";
-	}			
+	}
 	if($objForm->form_header_text != "" )
 	{
 		$formcss.= "#tblform h2 { color:"."#".str_replace("#","",$objForm->form_header_text).";}\n";
-	}		
+	}
 	if($objForm->form_normal_text_bg != "" )
 	{
 		$formcss.= "#tblform td { background:"."#".str_replace("#","",$objForm->form_normal_text_bg).";}\n#tblform td  .normal_text{ background:"."#".str_replace("#","",$objForm->form_normal_text_bg)."; font: 13px helvetica,arial,sans;}\n";
@@ -59,15 +59,15 @@
 	{
 		$formcss.= "#tblform td { color:"."#".str_replace("#","",$objForm->form_normal_text).";}\n#tblform td  .normal_text{ color:"."#".str_replace("#","",$objForm->form_normal_text)."; font: 13px helvetica,arial,sans;}\n";
 	}
-			
+
 	$form = array();
-	
+
 	$field = array();
-	
+
 	$field_options = array();
-	
+
 	$options = array();
-	
+
 	$arr_select  = array();
 	$arr_checkbox = array();
 	$arr_radio = array();
@@ -76,117 +76,117 @@
 	$extra_js_messages = "";
 	$extra_js_idnumber = "";
 	$minimum_age_require = 18;
-	
+
 	$objState->setAllValues($cmn->getSession('Home_State_ID'));
-	
-	$minimum_age_note = "";	
+
+	$minimum_age_note = "";
 	if(isset($objState->state_minimum_age_text) && $objState->state_minimum_age_text != "")
-		$minimum_age_note = $objState->state_minimum_age_text;	
+		$minimum_age_note = $objState->state_minimum_age_text;
 
 	$stateLangInfoArr = $objState->fetchStateLanguageDetail($cmn->getSession('Home_State_ID'));
-	
+
 	if(isset($stateLangInfoArr[$language_id]['state_minimum_age_text']) && $stateLangInfoArr[$language_id]['state_minimum_age_text'] != "")
-		$minimum_age_note = $stateLangInfoArr[$language_id]['state_minimum_age_text'];		
-		
+		$minimum_age_note = $stateLangInfoArr[$language_id]['state_minimum_age_text'];
+
 	$electionCriteriaDateArr = array();
 	$electionCriteriaDateArr[] = date("Y-m-d");
-	
+
 	if($objState->state_minimum_age_criteria != "")
 	{
 		$firstElectionDateArr =  explode("-",$firstElectionDate);
 		$minimumAgeCriteriaArr = explode(",", $objState->state_minimum_age_criteria);
-		
+
 		if(in_array(1, $minimumAgeCriteriaArr))
 		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, $firstElectionDateArr[1], $firstElectionDateArr[2], $firstElectionDateArr[0] - $minimum_age_require));
 		}
-		
+
 		if(in_array(2, $minimumAgeCriteriaArr))
 		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, date("m"), date("d"), date("Y") - 17));
 		}
-		
+
 		if(in_array(3, $minimumAgeCriteriaArr))
 		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, date("m")-6, date("d"), date("Y") - 17));
 		}
-		
+
 		if(in_array(4, $minimumAgeCriteriaArr))
 		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, date("m"), date("d"), date("Y") - 16));
 		}
-		
+
 		if(in_array(5, $minimumAgeCriteriaArr))
-		{			
+		{
 			if($objState->state_minimum_age_criteria_election_type != "")
 			{
 				$condNextElection = " AND election_date >= '".currentScriptDateOnly()."' AND state_id = '".$stateid."' AND election_type_id in (".$objState->state_minimum_age_criteria_election_type.") ";
 				$nextElectionDate = $objElectionDate->getFirstElectionDate($condNextElection);
-				
+
 				$nextElectionDateArr =  explode("-",$nextElectionDate);
-				
+
 				$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, $nextElectionDateArr[1], $nextElectionDateArr[2], $nextElectionDateArr[0] - $minimum_age_require));
 			}
 		}
-		
+
 		if(in_array(6, $minimumAgeCriteriaArr))
-		{			
+		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, date("m")-10, date("d"), date("Y") - 17));
-		}	
+		}
 
 		if(in_array(7, $minimumAgeCriteriaArr))
-		{			
+		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, 12, 31, date("Y") - 18));
-		}	
-		
+		}
+
 		if(in_array(8, $minimumAgeCriteriaArr))
-		{			
+		{
 			$electionCriteriaDateArr[] = date("Y-m-d", mktime(0,0,0, date("m"), date("d") + 90, date("Y") - 18));
 		}
 	}
-	
+
 	$electionCriteriaDate = min($electionCriteriaDateArr);
-	
+
 	$index = -1;
 
 	require_once (COMMON_CLASS_DIR ."clscommon.php");
 	$cmn = new common();
-	
+
 	require_once (COMMON_CLASS_DIR ."clsfield.php");
 	$objField = new field();
-	
+
 	$objField->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 	$objField->client_id = $client_id;
 	$condition = " AND field_mapping_id='1' ";
 	$fieldList = $objField->fetchAllFieldFront($client_id, $condition);
-	
+
 	require_once (COMMON_CLASS_DIR ."clsfield_option.php");
 	$objfield_option = new field_option();
 	$objfield_option->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
-	
+
 	require_once (COMMON_CLASS_DIR ."clsfield_condition.php");
 	$objfield_condition = new field_condition();
-	
+
 	require_once (COMMON_CLASS_DIR ."clsfield_attribute.php");
 	$objfield_attribute = new field_attribute();
-	
+
 	require_once (COMMON_CLASS_DIR ."clsmessagelanguage.php");
 	$msg = new messagelanguage();
-	
+
 	require_once (COMMON_CLASS_DIR ."clsencdec.php");
 	$objEncDec = new encdec();
 
-	
+
 	$isShow = 0;
 	$isComplete = 1;
-	
+
 	require_once (COMMON_CLASS_DIR ."clsentry.php");
 	$objEntry = new entry();
-	
+
 	for($i=0;$i<count($fieldList);$i++)
 	{
 		$index = $index + 1;
-		
+
 		$field["field_id"] = $fieldList[$i]["field_id"];
 		$field["form_id"] = $fieldList[$i]["form_id"];
 		$field["field_type_id"] = $fieldList[$i]["field_type_id"];
@@ -197,52 +197,52 @@
 		$field["field_iscondition"] = $fieldList[$i]["field_iscondition"];
 		$field["field_order"] = $fieldList[$i]["field_order"];
 		$field["field_mapping_id"] = $fieldList[$i]["field_mapping_id"];
-		
-		$form[$index] = $field;		
+
+		$form[$index] = $field;
 	}
-	
+
 	if(isset($_SESSION['err']))
 	{
 		echo str_replace("##imgpath##",BASE_DIR,$_SESSION['err']);
 		$msg->clearMsg();
 	}
-	
+
 	$isPreviewSite = 0;
 	if(isset($_SESSION["isPreview"]) && $_SESSION["isPreview"]==1)
 	{
 		$isPreviewSite = 1;
 	}
-	
+
 	$id_field_name_source = "";
 	$id_field_name = "";
 	$eligibility_field_count = 0;
 	$eligibility_field_name = "";
-			
+
 	if($isShow == 0)
-	{		
+	{
 		require_once (COMMON_CLASS_DIR ."clsstate.php");
 		$objState1=new state();
 		$objState1->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 		$condState= " and state_active = 1 ";
 		$statedata=$objState1->fetchAllAsArrayFront('',$condState,'state_name');
-				
+
 		require_once (COMMON_CLASS_DIR ."clsracegroup_state.php");
 		$objRaceGroup=new racegroup_state();
 		$objRaceGroup->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 		$condRaceGroup= " and race_group_active = 1 AND s.state_id = '".$cmn->getSession('Home_State_ID')."'";
 		$raceGroupData=$objRaceGroup->fetchAllAsArrayFront($condRaceGroup);
-				
+
 		require_once (COMMON_CLASS_DIR ."clsidnumber_state.php");
 		$objIdNumber=new idnumber_state();
 		$objIdNumber->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 		$condIdNumber= " and id_number_active = 1 AND s.state_id = '".$cmn->getSession('Home_State_ID')."'";
 		$IdNumberData=$objIdNumber->fetchAllAsArrayFront($condIdNumber);
-				
+
 		require_once (COMMON_CLASS_DIR ."clsparty_state.php");
 		$objParty=new party_state();
 		$objParty->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 		$condParty= " and party_active = 1 AND s.state_id = '".$cmn->getSession('Home_State_ID')."'";
-		$partyData=$objParty->fetchAllAsArrayFront($condParty);		
+		$partyData=$objParty->fetchAllAsArrayFront($condParty);
 ?>
 <form id="frm" name="frm" method="post" action="">
 <input type="hidden" name="chksubmit" id="chksubmit" value="0" />
@@ -254,8 +254,8 @@ if($formcss != "")
 	echo '<style type="text/css">'."\n";
 	echo $formcss."\n";;
 	echo '</style>';
-}	
-?>	
+}
+?>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" id="tblform">
 <?php
 	for($i=0; $i<count($form); $i++)
@@ -264,32 +264,32 @@ if($formcss != "")
 		$index_checkbox = -1;
 		$index_radio = -1;
 		$index_option = 0;
-		$field_options = array();		
-	
+		$field_options = array();
+
 		$form_id = $form[$i]["form_id"];
 		$field_id = $form[$i]["field_id"];
-				
-		$field_type_id = $form[$i]["field_type_id"];
-		$field_name = $form[$i]["field_name"];		
-		$field_caption = html_entity_decode($form[$i]["field_caption"]);						
-		$is_required = $form[$i]["is_required"];						
-		$field_ishide = $form[$i]["field_ishide"];	
-				
-		$frm_hiddenfield_value = $form[$i]["field_mapping_id"];						
 
-		$field_iscondition = $form[$i]["field_iscondition"];						
+		$field_type_id = $form[$i]["field_type_id"];
+		$field_name = $form[$i]["field_name"];
+		$field_caption = html_entity_decode($form[$i]["field_caption"]);
+		$is_required = $form[$i]["is_required"];
+		$field_ishide = $form[$i]["field_ishide"];
+
+		$frm_hiddenfield_value = $form[$i]["field_mapping_id"];
+
+		$field_iscondition = $form[$i]["field_iscondition"];
 
 		$frm_field_name = "frmfld_".$form_id."_".$field_id;
 		$frm_hiddenfield_name = "frmhdn_".$form_id."_".$field_id;
 		$frm_showfield_name = "frmshw_".$field_id;
 		$frm_already_name = "frmalready_".$form_id."_".$field_id;
-		
+
 		$attributeValues = '';
 		$attrVal = '';
-		
+
 		$objField->field_type_id = $field_type_id;
 		$totAttr = $objField->getField_Type_Attributes();
-		
+
 		for($m=0;$m<count($totAttr);$m++)
 		{
 			$conditionAtt = " AND field_id='".$field_id."' AND field_type_attribute_id='".$totAttr[$m]['field_type_attribute_id']."' AND field_type_id='".$field_type_id."'";
@@ -299,31 +299,31 @@ if($formcss != "")
 				$attributeValues.= $totAttr[$m]['field_type_attribute_name']."=".$attrVal." ";
 			}
 		}
-		
+
 ?>
-		<?php if ($frm_hiddenfield_value == 1) { ?>		
+		<?php if ($frm_hiddenfield_value == 1) { ?>
 			<tr id="row_<?php print $field_id; ?>">
 				<td align="left" valign="middle"><h2><?php print $field_caption; ?></h2></td>
 			</tr>
 		<?php if ($field_ishide == 1)
 			{ ?>
-		<script type="text/javascript" language="Javascript">	
+		<script type="text/javascript" language="Javascript">
 		<!--
 			hidedefaultrow('row_<?php print $field_id; ?>', 0);
 		-->
-		</script>		
-		<?php }} 
-		
+		</script>
+		<?php }}
+
 		$condSub = " AND field_mapping_id <> '1' AND field_header_field = '".$field_id."' ";
 		$fieldListSub = $objField->fetchAllFieldFront($client_id, $condSub);
-		
+
 		$formsub = array();
 		$insub = -1;
-		
+
 		for($is=0;$is<count($fieldListSub);$is++)
 		{
 			$insub = $insub + 1;
-			
+
 			$field["field_id"] = $fieldListSub[$is]["field_id"];
 			$field["form_id"] = $fieldListSub[$is]["form_id"];
 			$field["field_type_id"] = $fieldListSub[$is]["field_type_id"];
@@ -335,19 +335,19 @@ if($formcss != "")
 			$field["field_order"] = $fieldListSub[$is]["field_order"];
 			$field["field_mapping_id"] = $fieldListSub[$is]["field_mapping_id"];
 			$field["field_note"] = $fieldListSub[$is]["field_note"];
-			
-			$formsub[$insub] = $field;		
-			
+
+			$formsub[$insub] = $field;
+
 			$arrOption_List = $objfield_option->fetchAllAsArrayFront(NULL, NULL, " and field_id = ".$fieldListSub[$is]["field_id"], "field_option_order");
-			
+
 			if(count($arrOption_List)>0)
-			{		
+			{
 				for($js=0;$js<count($arrOption_List);$js++)
 				{
 					$options["field_option_id"] = $arrOption_List[$js]['field_option_id'];
 					$options["field_id"] = $arrOption_List[$js]['field_id'];
 					$options["field_option"] = $arrOption_List[$js]['field_option'];
-				
+
 					$arrOption_Detail = $objfield_condition->fetchallasarray(NULL, NULL, " and field_option_id = ".$arrOption_List[$js]['field_option_id'], "field_condition_id");
 					if(count($arrOption_Detail)>0)
 					{
@@ -358,65 +358,65 @@ if($formcss != "")
 							$hide_field_idsv = substr($arrOption_Detail[0]['hide_field_ids'],1);
 							$hide_field_idsv = str_replace(",","|",$hide_field_idsv);
 						}
-						
+
 						if($arrOption_Detail[0]['show_field_ids']!="")
 						{	$arrOption_Detail[0]['show_field_ids'];
 							$show_field_idsv = substr($arrOption_Detail[0]['show_field_ids'],1);
 							$show_field_idsv = str_replace(",","|",$show_field_idsv);
 						}
 						$options["show_field_ids"] = $show_field_idsv;
-						$options["hide_field_ids"] = $hide_field_idsv; //"8|9";			
+						$options["hide_field_ids"] = $hide_field_idsv; //"8|9";
 					}
 					else
 					{
 						$options["show_field_ids"] = "";
 						$options["hide_field_ids"] = ""; //"8|9";
 					}
-					
+
 					$field_options[$index_option++] = $options;
 				}
 			}
 		}
-		
-		if(count($formsub) > 0)		
+
+		if(count($formsub) > 0)
 		{ ?>
 		<tr>
                 <td align="left" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-		<?php	
+		<?php
 		for($is=0; $is<count($formsub); $is++)
 		{
 			$form_id = $formsub[$is]["form_id"];
 			$field_id = $formsub[$is]["field_id"];
-					
+
 			$field_type_id = $formsub[$is]["field_type_id"];
-			$field_name = $formsub[$is]["field_name"];		
-			$field_caption = html_entity_decode($formsub[$is]["field_caption"]);						
-			$is_required = $formsub[$is]["is_required"];						
-			$field_ishide = $formsub[$is]["field_ishide"];	
-			$frm_hiddenfield_value = $formsub[$is]["field_mapping_id"];						
+			$field_name = $formsub[$is]["field_name"];
+			$field_caption = html_entity_decode($formsub[$is]["field_caption"]);
+			$is_required = $formsub[$is]["is_required"];
+			$field_ishide = $formsub[$is]["field_ishide"];
+			$frm_hiddenfield_value = $formsub[$is]["field_mapping_id"];
 
-			$field_iscondition = $formsub[$is]["field_iscondition"];		
+			$field_iscondition = $formsub[$is]["field_iscondition"];
 
-			$field_note = $formsub[$is]["field_note"];	
-		
+			$field_note = $formsub[$is]["field_note"];
+
 			if($field_note != "")
 			{
 				$field_note = " <br><span style='font-size:10px;'>(<span style='font-weight:bold;'>".LANG_NOTE.": </span>".$field_note.")</span>";
-			}	
-			
+			}
+
 			$frm_field_name = "frmfld_".$form_id."_".$field_id;
 			$id_field_name = "idfld_".$form_id."_".$field_id;
-			
+
 			$frm_hiddenfield_name = "frmhdn_".$form_id."_".$field_id;
 			$frm_showfield_name = "frmshw_".$field_id;
 			$frm_already_name = "frmalready_".$form_id."_".$field_id;
-			
+
 			$attributeValues = '';
 			$attrVal = '';
-			
+
 			$objField->field_type_id = $field_type_id;
 			$totAttr = $objField->getField_Type_Attributes();
-			
+
 			for($m=0;$m<count($totAttr);$m++)
 			{
 				$conditionAtt = " AND field_id='".$field_id."' AND field_type_attribute_id='".$totAttr[$m]['field_type_attribute_id']."' AND field_type_id='".$field_type_id."'";
@@ -426,16 +426,16 @@ if($formcss != "")
 					$attributeValues.= $totAttr[$m]['field_type_attribute_name']."=".$attrVal." ";
 				}
 			} ?>
-		
-		<input type="hidden" name="<?PHP print $frm_hiddenfield_name; ?>" id="<?PHP print $frm_hiddenfield_name; ?>" value="<?PHP  print $frm_hiddenfield_value; ?>" />	
+
+		<input type="hidden" name="<?PHP print $frm_hiddenfield_name; ?>" id="<?PHP print $frm_hiddenfield_name; ?>" value="<?PHP  print $frm_hiddenfield_value; ?>" />
 		<input type="hidden" name="<?PHP print $frm_showfield_name; ?>" id="<?PHP print $frm_showfield_name; ?>" value="<?PHP if(isset($_POST[$frm_showfield_name])){ print $_POST[$frm_showfield_name]; } else { if($field_ishide==1) { print "no"; } else { print "yes"; } } ?>" />
-		
-		<?php	
+
+		<?php
 		//////////radio btn//////
-		if($frm_hiddenfield_value == 2) { 
+		if($frm_hiddenfield_value == 2) {
 				//$showhide = "0_0_0";
 				$index_radio = $index_radio + 1;
-				$arr_radio[$index_radio] = $frm_field_name;											
+				$arr_radio[$index_radio] = $frm_field_name;
 		?>
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
@@ -444,13 +444,13 @@ if($formcss != "")
 						{
 							if ($field_id != $field_options[$j]["field_id"])
 								continue;
-								
+
 							$field_option_id = $field_options[$j]["field_option_id"];
 							$field_option = $field_options[$j]["field_option"];
-							
+
 							$show_field_ids = $field_options[$j]["show_field_ids"];
-							$hide_field_ids = $field_options[$j]["hide_field_ids"];	
-							
+							$hide_field_ids = $field_options[$j]["hide_field_ids"];
+
 							$checked = "";
 							if (isset($_POST[$frm_field_name]))
 							{
@@ -467,36 +467,36 @@ if($formcss != "")
 					  </td>
                     </tr>
 		<?php
-			} 
+			}
 			///checkbox
-			else if($frm_hiddenfield_value == 3) { 				
+			else if($frm_hiddenfield_value == 3) {
 				$checked = "";
-						
+
 				for($j=0; $j<count($field_options); $j++)
 				{
 					if ($field_id != $field_options[$j]["field_id"])
 						continue;
-						
+
 					$field_option_id = $field_options[$j]["field_option_id"];
 					$field_option = $field_options[$j]["field_option"];
-					
+
 					$show_field_ids = $field_options[$j]["show_field_ids"];
-					$hide_field_ids = $field_options[$j]["hide_field_ids"];	
-					
+					$hide_field_ids = $field_options[$j]["hide_field_ids"];
+
 					$checked = "";
 					if (isset($_POST[$frm_field_name]))
 					{
-						$checked = "checked='checked'";		
-						$jScript.= "change_checkbox('".$frm_field_name."');\n";		
-					}		
+						$checked = "checked='checked'";
+						$jScript.= "change_checkbox('".$frm_field_name."');\n";
+					}
 			?>
-					<tr class="white-bro" id="row_<?php print $field_id; ?>">                      
+					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" colspan='2'>
 					  <label class="normal_text" id="lbl_<?php print $field_id; ?>" for="<?php print $field_option_id; ?>" ><input type="checkbox" id="<?php print $field_option_id; ?>" name="<?php print $frm_field_name; ?>" class="<?php if($is_required == "1") print "required"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> value="<?php print $field_option_id."_".$show_field_ids."_".$hide_field_ids; ?>" <?php print $checked; ?> onClick="change_checkbox(this.name);" />&nbsp;<?php print $field_caption; ?></label><?php echo $field_note;?>
 					  </td>
                     </tr>
 			<?
-				 }} else if($frm_hiddenfield_value == 4) {                       
+				 }} else if($frm_hiddenfield_value == 4) {
 			?>
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
@@ -505,16 +505,16 @@ if($formcss != "")
 					{
 						if ($field_id != $field_options[$j]["field_id"])
 							continue;
-							
+
 						$field_option_id = $field_options[$j]["field_option_id"];
 						$field_option = $field_options[$j]["field_option"];
-						
+
 						$show_field_ids = $field_options[$j]["show_field_ids"];
-						$hide_field_ids = $field_options[$j]["hide_field_ids"];	
-						
+						$hide_field_ids = $field_options[$j]["hide_field_ids"];
+
 						$checked = "";
 						if (isset($_POST[$frm_field_name]))
-						{	
+						{
 							$postvalarr = explode("|^|", $_POST[$frm_field_name]);
 							if (in_array($field_option_id."_".$show_field_ids."_".$hide_field_ids, $postvalarr))
 							{
@@ -526,18 +526,29 @@ if($formcss != "")
 					  <?php } ?>
 					  <?php echo $field_note;?></td>
                     </tr>
-			<?php
-					}
-				//Textbox
-					else if($frm_hiddenfield_value == 5) { 
-					
-					?> 
+			<?php } /* GENERAL INPUT FIELD */ elseif ($frm_hiddenfield_value == 5) { ?>
+
+
+                    <?php
+                    // DETECT FIELD VALUE
+                    $fieldValue = '';
+                    if (isset($_POST[$frm_field_name])) {
+                        $fieldValue = $cmn->readValue($_POST[$frm_field_name]);
+                    } else {
+                        switch ($frm_field_name) {
+                            case 'frmfld_1_8': $fieldValue = $cmn->getSession('voter_lastname'); break;
+                            case 'frmfld_1_6': $fieldValue = $cmn->getSession('voter_firstname'); break;
+                        }
+                    }
+                    ?>
+
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
 					  <br />
-					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php (isset($_POST[$frm_field_name])) ? print $cmn->readValue($_POST[$frm_field_name]) : print ""; ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> /><?php echo $field_note;?></td>
-                    </tr>					
-				<?php } 
+					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?= $fieldValue ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> /><?php echo $field_note;?></td>
+                    </tr>
+
+				<?php }
 					//dropdown
 					else if($frm_hiddenfield_value == 6) { ?>
 						<tr class="white-bro" id="row_<?php print $field_id; ?>">
@@ -546,21 +557,21 @@ if($formcss != "")
 						  <select id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" <?PHP echo $attributeValues; ?>  onchange="change_select(this.name);" class="<?php if($is_required == "1") print "select required"; else print "select"; ?>" alt="<?PHP echo $field_caption; ?>">
 					<option value=""><?php echo LANG_SELECT;?></option>
 				<?php
-				// $showhide = "0_0_0";				
+				// $showhide = "0_0_0";
 				$index_select = $index_select + 1;
-				$arr_select[$index_select] = $frm_field_name;	
+				$arr_select[$index_select] = $frm_field_name;
 
 				for($j=0; $j<count($field_options); $j++)
 				{
 					if ($field_id != $field_options[$j]["field_id"])
 						continue;
-						
+
 					$field_option_id = $field_options[$j]["field_option_id"];
 					$field_option = $field_options[$j]["field_option"];
-					
+
 					$show_field_ids = $field_options[$j]["show_field_ids"];
-					$hide_field_ids = $field_options[$j]["hide_field_ids"];	
-					
+					$hide_field_ids = $field_options[$j]["hide_field_ids"];
+
 					$selected = "";
 					if (isset($_POST[$frm_field_name]))
 					{
@@ -571,14 +582,14 @@ if($formcss != "")
 						}
 					}
 		?>
-					<option  value="<?php print $field_option_id."_".$show_field_ids."_".$hide_field_ids."_".$field_option; ?>" <?php print $selected; ?>><?php print $field_option; ?></option>                   
+					<option  value="<?php print $field_option_id."_".$show_field_ids."_".$hide_field_ids."_".$field_option; ?>" <?php print $selected; ?>><?php print $field_option; ?></option>
 		<?php
 				}// END OF FOR LOOP OPTIONS
 		?>
 			</select><?php echo $field_note;?></td>
                     </tr>
-		<?php				
-			
+		<?php
+
 		} else if($frm_hiddenfield_value == 7) { /* ?>
 		<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
@@ -648,21 +659,21 @@ if($formcss != "")
 					  <br />
 					  <select id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" <?PHP echo $attributeValues; ?> class="<?php if($is_required == "1") print "select required"; else print "select"; ?>" alt="<?PHP echo $field_caption; ?>">
 			<option value=""><?php echo LANG_SELECT;?></option>
-			<?php 
+			<?php
 			$partyOption='';
 			for($k=0;$k<count($partyData);$k++)
 			{
 				if (isset($_POST[$frm_field_name]))
 				{
 					if ($partyData[$k]['party_name'] == trim($_POST[$frm_field_name]))
-						$partyOption .= "<option value='".$cmn->setValInput($partyData[$k]['party_name'])."' selected>".$partyData[$k]['party_name']."</option>"; 
+						$partyOption .= "<option value='".$cmn->setValInput($partyData[$k]['party_name'])."' selected>".$partyData[$k]['party_name']."</option>";
 					else
 						$partyOption .= "<option value='".$cmn->setValInput($partyData[$k]['party_name'])."'>".$partyData[$k]['party_name']."</option>";
 				}
 				else
-					$partyOption .= "<option value='".$cmn->setValInput($partyData[$k]['party_name'])."'>".$partyData[$k]['party_name']."</option>"; 
+					$partyOption .= "<option value='".$cmn->setValInput($partyData[$k]['party_name'])."'>".$partyData[$k]['party_name']."</option>";
 			}
-		
+
 			echo $partyOption; ?>
 			</select></td>
                     </tr>
@@ -672,19 +683,19 @@ if($formcss != "")
 					  <br />
 					  <select id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" <?PHP echo $attributeValues; ?> class="<?php if($is_required == "1") print "select required"; else print "select"; ?>" alt="<?PHP echo $field_caption; ?>">
 			<option value=""><?php echo LANG_SELECT;?></option>
-			<?php 
+			<?php
 			$raceGroupOption='';
 			for($k=0;$k<count($raceGroupData);$k++)
 			{
 				if (isset($_POST[$frm_field_name]))
 				{
 					if ($raceGroupData[$k]['race_group_name'] == trim($_POST[$frm_field_name]))
-						$raceGroupOption .= "<option value='".$cmn->setValInput($raceGroupData[$k]['race_group_name'])."' selected>".$raceGroupData[$k]['race_group_name']."</option>"; 
+						$raceGroupOption .= "<option value='".$cmn->setValInput($raceGroupData[$k]['race_group_name'])."' selected>".$raceGroupData[$k]['race_group_name']."</option>";
 					else
-						$raceGroupOption .= "<option value='".$cmn->setValInput($raceGroupData[$k]['race_group_name'])."'>".$raceGroupData[$k]['race_group_name']."</option>"; 
+						$raceGroupOption .= "<option value='".$cmn->setValInput($raceGroupData[$k]['race_group_name'])."'>".$raceGroupData[$k]['race_group_name']."</option>";
 				}
 				else
-					$raceGroupOption .= "<option value='".$cmn->setValInput($raceGroupData[$k]['race_group_name'])."'>".$raceGroupData[$k]['race_group_name']."</option>"; 
+					$raceGroupOption .= "<option value='".$cmn->setValInput($raceGroupData[$k]['race_group_name'])."'>".$raceGroupData[$k]['race_group_name']."</option>";
 			}
 			echo $raceGroupOption; ?>
 			</select></td>
@@ -695,16 +706,16 @@ if($formcss != "")
 					  <br />
 					  <select id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" <?PHP echo $attributeValues; ?>  class="<?php if($is_required == "1") print "select required"; else print "select"; ?>" alt="<?PHP echo $field_caption; ?>" onchange="displayIDfield('<?php print $frm_field_name; ?>', '<?php print "span_".$id_field_name; ?>');">
 			<option value=""><?php echo LANG_SELECT;?></option>
-			<?php 
+			<?php
 			$IdNumberOption='';
 			for($k=0;$k<count($IdNumberData);$k++)
 			{
 				if (isset($_POST[$frm_field_name]))
 				{
 					if ($IdNumberData[$k]['id_number_name'] == trim($_POST[$frm_field_name]))
-						$IdNumberOption .= "<option value='".$cmn->setValInput($IdNumberData[$k]['id_number_name'])."' selected>".$IdNumberData[$k]['id_number_name']."</option>"; 
+						$IdNumberOption .= "<option value='".$cmn->setValInput($IdNumberData[$k]['id_number_name'])."' selected>".$IdNumberData[$k]['id_number_name']."</option>";
 					else
-						$IdNumberOption .= "<option value='".$cmn->setValInput($IdNumberData[$k]['id_number_name'])."'>".$IdNumberData[$k]['id_number_name']."</option>"; 
+						$IdNumberOption .= "<option value='".$cmn->setValInput($IdNumberData[$k]['id_number_name'])."'>".$IdNumberData[$k]['id_number_name']."</option>";
 				}
 				else
 					$IdNumberOption .= "<option value='".$cmn->setValInput($IdNumberData[$k]['id_number_name'])."'>".$IdNumberData[$k]['id_number_name']."</option>";
@@ -715,13 +726,13 @@ if($formcss != "")
 						$extra_js_idnumber.= "idnumberlength['".($k+1)."'] = '';";
 					else
 						$extra_js_idnumber.= "idnumberlength['".($k+1)."'] = '".$IdNumberData[$k]['id_number_length']."';";
-				}	
+				}
 				else
 					$extra_js_idnumber.= "idnumberlength['".($k+1)."'] = ''; ";
-					
-				$extra_js_idnumber.= "idnumbernote['".($k+1)."'] = '".$IdNumberData[$k]['id_number_id']."';";	
+
+				$extra_js_idnumber.= "idnumbernote['".($k+1)."'] = '".$IdNumberData[$k]['id_number_id']."';";
 			}
-			
+
 			$extra_js_rules.= $id_field_name.': {
 									  required: true,
 									  minlength: function(element) {
@@ -731,86 +742,97 @@ if($formcss != "")
 											else 
 												return 1;
 									  },	
-									},';	
-									
-			$extra_js_messages.= $id_field_name.': "'.LANG_ENTER_VALID_ID_NUMBER.'",';						
-			
+									},';
+
+			$extra_js_messages.= $id_field_name.': "'.LANG_ENTER_VALID_ID_NUMBER.'",';
+
 			$idnumber_field_note = "";
-			
+
 			$idnumber_field_note = "";
 			$objIdNumber->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 			$objIdNumber->state_id = $cmn->getSession('Home_State_ID');
 			$id_number_note=$objIdNumber->fetchIdNumberNotes($condIdNumber);
-		
+
 			if($id_number_note != "")
 				$idnumber_field_note = " <br><span style='font-size:10px;'>(<span style='font-weight:bold;'>".LANG_NOTE.": </span>".$id_number_note.")</span>";
-			
-			$fixed_idnumaber_note = " <span style='font-size:10px; display:none;' id='fixedIdNote'><br>(<span style='font-weight:bold;'>".LANG_NOTE_SOCIAL_SECURITY.")</span>";	
+
+			$fixed_idnumaber_note = " <span style='font-size:10px; display:none;' id='fixedIdNote'><br>(<span style='font-weight:bold;'>".LANG_NOTE_SOCIAL_SECURITY.")</span>";
 			echo $IdNumberOption; ?>
 			</select> <span id="span_<?php print $id_field_name; ?>" <?php if(!isset($_POST[$id_field_name])) { ?> style="display:none;" <?php } ?>><input type="password" class="input required" name="<?php print $id_field_name; ?>" id="<?php print $id_field_name; ?>" value="<?php (isset($_POST[$id_field_name])) ? print $cmn->readValue($_POST[$id_field_name]) : print ""; ?>" style="width:200px;" ></span><?php echo $idnumber_field_note.$fixed_idnumaber_note;?></td>
-                    </tr>		
-		<?php 			
-		} else if($frm_hiddenfield_value == 11) { ?>
+                    </tr>
+
+		<?php } /* DATE OF BIRTH FIELD */ elseif($frm_hiddenfield_value == 11) { ?>
+
+            <?php
+            // DETECT FIELD VALUE
+            $fieldValue = 'MM/DD/YYYY';
+            if (isset($_POST[$frm_field_name])) {
+                $fieldValue = $cmn->readValue($_POST[$frm_field_name]);
+            } else {
+                $fieldValue = $cmn->getSession('voter_dateofbirth');
+            }
+            ?>
+
 				<tr class="white-bro" id="row_<?php print $field_id; ?>">
 				  <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
 				  <br />
-				  <input type="text" AUTOCOMPLETE="OFF" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php (isset($_POST[$frm_field_name])) ? print $cmn->readValue($_POST[$frm_field_name]) : print "MM/DD/YYYY"; ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> onBlur="javascript:hideDefaultDate();" onFocus="javascript:showDefaultDate();" style="width: 100px;" /><?php echo $field_note;?>
-				  <?php 
+				  <input type="text" AUTOCOMPLETE="OFF" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?= $fieldValue ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> onBlur="javascript:hideDefaultDate();" onFocus="javascript:showDefaultDate();" style="width: 100px;" /><?php echo $field_note;?>
+				  <?php
 				  $nextelectiondate = date("F d, Y", mktime(0,0,0, $firstElectionDateArr[1], $firstElectionDateArr[2], $firstElectionDateArr[0]));
-				  
+
 				  $minimum_age_note = str_replace("##election_date##",$nextelectiondate,$minimum_age_note);
-				  
+
 				  echo "<br><span style='font-size:10px;'>(<span style='font-weight:bold;'>".LANG_NOTE.": </span>".$minimum_age_note.")</span>";
 				 ?>
 				  </td>
                 </tr>
 				<script type="text/javascript">
 				<!--
-				<?php				
+				<?php
 				$electionCriteriaDateArr =  explode("-",$electionCriteriaDate);
 				$startY = $electionCriteriaDateArr[0];
 				$startM = $electionCriteriaDateArr[1];
 				$startD = $electionCriteriaDateArr[2];
-				
+
 				if($is_required == "1")
 					$extra_js_rules.= $frm_field_name.': {
 									  required: true,
-									  DateFormat: true,	
-									  maxAllowDate: true,	
+									  DateFormat: true,
+									  maxAllowDate: true,
 									},';
 				else
 					$extra_js_rules.= $frm_field_name.': {
 									  required: function(element) {
 											if(jQuery("#'.$frm_field_name.'").val() != "")
-											{	
+											{
 												return true;
 											}
 											else {
 												return false;
 											}
 									  },
-									  DateFormat: true,	
-									  maxAllowDate: true,	
-									},';				
-				?>							
+									  DateFormat: true,
+									  maxAllowDate: true,
+									},';
+				?>
 				function hideDefaultDate()
-				{		
+				{
 					if(document.getElementById('<?php print $frm_field_name; ?>').value == "")
-					{						
+					{
 						document.getElementById('<?php print $frm_field_name; ?>').value = "MM/DD/YYYY";
-					}							
+					}
 				}
-				
+
 				function showDefaultDate()
-				{						
+				{
 					if(document.getElementById('<?php print $frm_field_name; ?>').value == "MM/DD/YYYY")
-					{						
+					{
 						document.getElementById('<?php print $frm_field_name; ?>').value = "";
 					}
-				}				
+				}
 
 				var maxallowdate = new Date(<?php echo $startY;?>, <?php echo $startM;?>, <?php echo $startD;?>);
-				-->	
+				-->
 				</script>
 		<?php } else if($frm_hiddenfield_value == 12) { ?>
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
@@ -824,29 +846,29 @@ if($formcss != "")
 					  <br />
 			<?php if($cmn->getSession('Home_State_ID') != "") { echo "<label class='normal_text'>".$cmn->getSession('Home_State')."</label>"; ?>
 			<input type="hidden" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php echo $cmn->getSession('Home_State'); ?>" />
-			<?php } else { ?> 	
+			<?php } else { ?>
 			<select id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" <?PHP echo $attributeValues; ?>  class="<?php if($is_required == "1") print "select required"; else print "select"; ?>" alt="<?PHP echo $field_caption; ?>">
 			<option value=""><?php echo LANG_SELECT;?></option>
-			<?php 
+			<?php
 			$stateoption='';
 			for($k=0;$k<count($statedata);$k++)
 			{
 				if (isset($_POST[$frm_field_name]))
 				{
 					if (strtolower($statedata[$k]['state_name']) == strtolower(trim($_POST[$frm_field_name])))
-						$stateoption .= "<option value='".$statedata[$k]['state_name']."' selected>".$statedata[$k]['state_name']."</option>"; 				
+						$stateoption .= "<option value='".$statedata[$k]['state_name']."' selected>".$statedata[$k]['state_name']."</option>";
 					else
-						$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>"; 	
+						$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>";
 				}
 				else
-					$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>"; 
+					$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>";
 			}
 			echo $stateoption;?>
 			</select>
 			<?php } ?>
 					</td>
                     </tr>
-		<?php } else if($frm_hiddenfield_value == 14) { 
+		<?php } else if($frm_hiddenfield_value == 14) {
 				if($is_required == "1")
 					$extra_js_rules.= $frm_field_name.': {
 									  required: true,
@@ -864,14 +886,14 @@ if($formcss != "")
 											}
 									  },
 									  minlength: 5,	
-									},';		
-									
+									},';
+
 				$extra_js_messages.= $frm_field_name.': "'.LANG_ENTER_5DIGIT_ZIPCODE.'",';
 		?>
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
 					  <br />
-					  <?php if($cmn->getSession('Home_ZipCode') != "") { ?>  
+					  <?php if($cmn->getSession('Home_ZipCode') != "") { ?>
 					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php echo $cmn->getSession('Home_ZipCode'); ?>" class="input" alt="<?PHP echo $field_caption; ?>" readonly  maxlength="5" style="width:85px"  />
 					  <?php } else { ?>
 					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php (isset($_POST[$frm_field_name])) ? print $cmn->readValue($_POST[$frm_field_name]) : print ""; ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> maxlength="5" style="width:85px" />
@@ -884,24 +906,24 @@ if($formcss != "")
 					  <br />
 					  <select id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" <?PHP echo $attributeValues; ?> class="<?php if($is_required == "1") print "select required"; else print "select"; ?>" alt="<?PHP echo $field_caption; ?>">
 			<option value=""><?php echo LANG_SELECT;?></option>
-			<?php 
+			<?php
 			$stateoption='';
 			for($k=0;$k<count($statedata);$k++)
 			{
 				if (isset($_POST[$frm_field_name]))
 				{
 					if (strtolower($statedata[$k]['state_name']) == strtolower(trim($_POST[$frm_field_name])))
-						$stateoption .= "<option value='".$statedata[$k]['state_name']."' selected>".$statedata[$k]['state_name']."</option>"; 			
+						$stateoption .= "<option value='".$statedata[$k]['state_name']."' selected>".$statedata[$k]['state_name']."</option>";
 					else
-						$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>"; 		
+						$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>";
 				}
 				else
-					$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>"; 
+					$stateoption .= "<option value='".$statedata[$k]['state_name']."'>".$statedata[$k]['state_name']."</option>";
 			}
 			echo $stateoption;?>
 			</select></td>
                     </tr>
-		<?php } else if($frm_hiddenfield_value == 16) { 
+		<?php } else if($frm_hiddenfield_value == 16) {
 				if($is_required == "1")
 					$extra_js_rules.= $frm_field_name.': {
 									  required: true,
@@ -919,26 +941,34 @@ if($formcss != "")
 											}
 									  },
 									  minlength: 5,	
-									},';					
-				
-				$extra_js_messages.= $frm_field_name.': "'.LANG_ENTER_5DIGIT_ZIPCODE.'",';	
+									},';
+
+				$extra_js_messages.= $frm_field_name.': "'.LANG_ENTER_5DIGIT_ZIPCODE.'",';
 		?>
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
-						<br />					  
-					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php (isset($_POST[$frm_field_name])) ? print $cmn->readValue($_POST[$frm_field_name]) : print ""; ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> maxlength="5" style="width:85px"  />					  
+						<br />
+					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php (isset($_POST[$frm_field_name])) ? print $cmn->readValue($_POST[$frm_field_name]) : print ""; ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?> maxlength="5" style="width:85px"  />
 					  </td>
                     </tr>
-		<?php } 
-				else if($frm_hiddenfield_value == 17) { 
-					
-					?> 
+
+		<?php } /* PHONE FIELD */ elseif( $frm_hiddenfield_value == 17) { ?>
+
+            <?php
+                // DETECT FIELD VALUE
+                $fieldValue = '';
+                if (isset($_POST[$frm_field_name])) {
+                    $fieldValue = $cmn->readValue($_POST[$frm_field_name]);
+                } else {
+                    $fieldValue = $cmn->getSession('voter_phone');
+                }
+            ?>
 					<tr class="white-bro" id="row_<?php print $field_id; ?>">
                       <td valign="top" align="left" width="100%" colspan="2"><label id="lbl_<?php print $field_id; ?>" for="<?php print $frm_field_name; ?>"><?php print $field_caption; ?></label><?php if($is_required == "1") { ?><span class="red">*</span> <? } ?>
 					  <br />
-					  <input type="text" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?php (isset($_POST[$frm_field_name])) ? print $cmn->readValue($_POST[$frm_field_name]) : print ""; ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?>  onblur="formatPhone(this)" style="width:200px" maxlength="13" /> <br><span style="font-size:10px;">(<?php echo LANG_EG;?> XXX-XXX-XXXX)</span><?php echo $field_note;?></td>
-                    </tr>						
-				<?php 				
+					  <input type="text" autocomplete="off" id="<?php print $frm_field_name; ?>" name="<?php print $frm_field_name; ?>" value="<?= $fieldValue ?>" class="<?php if($is_required == "1") print "input required"; else print "input"; ?>" alt="<?PHP echo $field_caption; ?>" <?PHP echo $attributeValues; ?>  onblur="formatPhone(this)" style="width:200px" maxlength="13" /> <br><span style="font-size:10px;">(<?php echo LANG_EG;?> XXX-XXX-XXXX)</span><?php echo $field_note;?></td>
+                    </tr>
+				<?php
 					if($is_required == "1")
 					$extra_js_rules.= $frm_field_name.': {
 									  required: true,
@@ -956,34 +986,34 @@ if($formcss != "")
 											}
 									  },
 									  phoneUS: 5,	
-									},';									
-					
-				$extra_js_messages.= $frm_field_name.': "'.LANG_ERROR_ENTER_VALID_PHONE_NO.'",';						
-				} 
+									},';
+
+				$extra_js_messages.= $frm_field_name.': "'.LANG_ERROR_ENTER_VALID_PHONE_NO.'",';
+				}
 		if ($field_ishide == 1)
 			{ ?>
-		<script type="text/javascript" language="Javascript">	
+		<script type="text/javascript" language="Javascript">
 		<!--
 			hidedefaultrow('row_<?php print $field_id; ?>', 0);
 		-->
-		</script>		
+		</script>
 		<?php }} ?>
 		</table></td></tr>
-		<?php } ?>		
-<?php } 
+		<?php } ?>
+<?php }
 if(isset($_SESSION['isPreview']) && $_SESSION['isPreview']!="")
 { ?>
-<tr class="white-bro">	  
+<tr class="white-bro">
 	  <td align="center" valign="middle"><img src="../images/<?php echo BTN_NEXT;?>" /></td>
 	</tr>
 <?php
 }
 else
 { ?>
-	<tr class="white-bro">	  
+	<tr class="white-bro">
 	  <td align="center" valign="middle"><input type="image" src="../images/<?php echo BTN_NEXT;?>" value="Submit" name="btnsubmit" id="btnsubmit" /></td>
 	</tr>
-<?php } ?>	
+<?php } ?>
   </table>
 </table>
 </div>
@@ -1022,7 +1052,7 @@ if(count($eligibility_criteria) > 0) { ?>
 </tr>
 <tr id="row_1">
 	<td align="left" valign="middle"><ul style="padding-bottom:25px;">
-<?php for($j=0; $j<count($eligibility_criteria); $j++){ 
+<?php for($j=0; $j<count($eligibility_criteria); $j++){
 if($eligibility_criteria[$j]["eligibility_criteria"] != "") {
 ?>
 <li><?php echo $eligibility_criteria[$j]["eligibility_criteria"];?></li>
@@ -1031,8 +1061,8 @@ if($eligibility_criteria[$j]["eligibility_criteria"] != "") {
 </td>
 </tr>
 </table>
-<?php } 
-$office_addess = ""; 
+<?php }
+$office_addess = "";
 
 if($objState->state_address1 != "")
 	$office_addess = $objState->state_address1;
@@ -1064,7 +1094,7 @@ if($objState->email != "")
 <td align='left' valign='middle'>".LANG_EMAIL.": <label class='normal_text'><a href='mailto:".$objState->email."'>".$objState->email."</a></label></td></tr>";
 
 if(count($contact_info) > 0)
-{	
+{
 ?>
 <table width="100%" cellspacing="0" cellpadding="0" border="0" id="tblform">
 <tr id="row_1">
@@ -1079,7 +1109,7 @@ if(count($contact_info) > 0)
 <script type="text/javascript" language="Javascript">
 <!--
 function validate()
-{		
+{
 }
 
 var idnumberlength = Array();
@@ -1087,28 +1117,28 @@ var idnumbernote = Array();
 <?php echo $extra_js_idnumber;?>
 
 function displayIDfield(fldname, shohidfield)
-{		
+{
 	var iddatafield = fldname.replace("frmfld", "idfld");
-	
+
 	if(idnumberlength[document.getElementById(fldname).selectedIndex] != "")
 		document.getElementById(iddatafield).maxLength = idnumberlength[document.getElementById(fldname).selectedIndex];
 	else
 		document.getElementById(iddatafield).maxLength = "100";
-		
-	document.getElementById(iddatafield).value = "";	
-	
+
+	document.getElementById(iddatafield).value = "";
+
 	if(document.getElementById(fldname).value != "")
 		document.getElementById(shohidfield).style.display = '';
 	else
 		document.getElementById(shohidfield).style.display = 'none';
-		
+
 	var idnumerid =	idnumbernote[document.getElementById(fldname).selectedIndex];
-	
+
 	if(idnumerid == 3 || idnumerid == 4)
 		document.getElementById("fixedIdNote").style.display = '';
 	else
-		document.getElementById("fixedIdNote").style.display = 'none';	
-}	
+		document.getElementById("fixedIdNote").style.display = 'none';
+}
 $(document).ready(function(){
 	$.validator.addMethod("DateFormat", function(value,element) {
 				return ValidateCustomDate(value);
@@ -1120,15 +1150,15 @@ $(document).ready(function(){
             },
             "<?php echo LANG_YOUR_ARE_NOT_ELIGIBLE_TO_VOTE_AS_BELOW_NOTE;?>"
      );
-			
+
 	$("#frm").validate({
-		rules: {		
-			<?php if($extra_js_rules != "") { 
+		rules: {
+			<?php if($extra_js_rules != "") {
 			echo $extra_js_rules;
 			} ?>
 		},
 		messages: {
-			<?php if($extra_js_messages != "") { 
+			<?php if($extra_js_messages != "") {
 			echo $extra_js_messages;
 			} ?>
 		},
@@ -1140,16 +1170,16 @@ $(document).ready(function(){
 				$("#containererreurtotal").hide();
 			}
 			$(element).removeClass(errorClass);
-		}    
+		}
 	});
-	
+
   });
- 
+
 $.extend($.validator.messages, {
-    required: "<?php echo LANG_FIELD_IS_REQUIRED;?>",	
-});  
-<?php 
-if(isset($jScript) && $jScript!="") 
+    required: "<?php echo LANG_FIELD_IS_REQUIRED;?>",
+});
+<?php
+if(isset($jScript) && $jScript!="")
 echo $jScript;
 ?>
 //-->
