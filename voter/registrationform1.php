@@ -9,7 +9,7 @@ if (isset($_REQUEST["lng"])) {
     exit;
 }
 
-if ((isset($_POST['btnsubmit']) && $_POST['btnsubmit'] != "") || (isset($_POST['btnsubmit_x']) && $_POST['btnsubmit_x'] != "")) {
+if (!empty($_POST['btnsubmit']) || !empty($_POST['btnsubmit_x'])) {
     include "registrationform1_db.php";
 }
 
@@ -23,10 +23,11 @@ if ($cmn->getSession('Home_State_ID') == "") {
 // set up auto-loader
 include DWOO_DIR . 'dwooAutoload.php';
 
-if ($cmn->getSession('Home_State_ID') == 51 || $cmn->getSession('Home_State_ID') == 37)
+if ($cmn->getSession('Home_State_ID') == 51 || $cmn->getSession('Home_State_ID') == 37) {
     $template_file = DESIGN_TEMPLATES_DIR . SITE_TEMPLATE_DIR . "/registration_ristricted.tpl";
-else
+} else {
     $template_file = DESIGN_TEMPLATES_DIR . SITE_TEMPLATE_DIR . "/registrationform1.tpl";
+}
 
 // create Dwoo object
 $dwoo = new Dwoo();
