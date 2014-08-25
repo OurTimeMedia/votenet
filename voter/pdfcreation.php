@@ -23,6 +23,13 @@ $FormFiller->setNeedAppearances(true);
 // get all fields from the document
 $fields = $FormFiller->getFields();
 
+// set default Empty value for all dropdown fields
+foreach ($fields as $field) {
+    if ($field instanceof SetaPDF_FormFiller_Field_Combo) {
+        setDropdownValue($field, " ");
+    }
+}
+
 // fill 4 address fields
 for ($addrLineNumber = 1; $addrLineNumber <= 5; $addrLineNumber++) {
     $fieldKey = 'pdfAddressField' . $addrLineNumber;
@@ -93,7 +100,6 @@ $document->save()->finish();
  */
 function setDropdownValue($field, $value) {
     $options = $field->getOptions();
-
     foreach ($options AS $id => $option) {
         if ($option['visibleValue'] == $value) {
             $field->setValue($id);
