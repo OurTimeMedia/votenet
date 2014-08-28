@@ -1,6 +1,7 @@
 {
     "require": {
-        "setasign/setapdf-formfiller_full": "2.4.0.637"
+        "setasign/setapdf-formfiller_full": "2.4.0.637",
+        "swiftmailer/swiftmailer": "@stable"
     },
     "repositories": [
         {
