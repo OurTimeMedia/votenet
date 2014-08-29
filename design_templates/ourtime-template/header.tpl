@@ -65,10 +65,11 @@ color: #{$nav_text_color};
 {if $hide_banner == "1"}
 {if $hide_navigation == "1"}
 <style type="text/css">
-#container, #content-main, #slider, #footer {
-    width:820px;
-    padding: 5px 0;
-}
+
+    #container, #slider, #footer {
+        width:730px;
+        padding: 5px 10px;
+    }
 
 #content{
     margin: 0 5px 10px;

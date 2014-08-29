@@ -10,17 +10,22 @@ $objField->language_id = $cmn->getSession(VOTER_LANGUAGE_ID);
 
 require_once (COMMON_CLASS_DIR ."clsvalidationlang.php");
 $objvalidation = new validationlang();
-$hiddenvar = "";	
-
+$hiddenvar = "";
 foreach($_POST as $key => $value)
-{	
+{
+    if ($key == 'user_email' || $key == 'is_send_email') {
+        $hiddenvar.= '<input type="hidden" name="'.$key.'" id="'.$key.'" value="'.$value.'" />';
+        continue;
+    }
+
+
 	if(is_array($value))
 		$value = implode("|^|",$value);
 	else 
 		$value = $cmn->setVal(trim($cmn->readValueSubmission($value,"")));
 	
 	$hiddenvar.= '<input type="hidden" name="'.$key.'" id="'.$key.'" value="'.$cmn->readValue($value).'" />';	
-	
+
 	$keyValue = explode("_",$key);
 	$hdnField = str_replace("frmfld","frmhdn",$key);
 	$hdnValue = $_POST[$hdnField];
@@ -29,16 +34,16 @@ foreach($_POST as $key => $value)
 	{
 		$cmn1->setSession('Home_ZipCode', $value);	
 	}
-	
+
 	$shwField = "";
 	$isRequiredField = 0;
 	if(isset($keyValue[2]) && $keyValue[2]!="") {
 		$shwField = "frmshw_".$keyValue[2];
-		
+
 		$isRequiredField = $objField->fieldValue("is_required",$keyValue[2]);
 		$fieldCaption = $cmn->readValueSubmission(addslashes($objField->fieldValueFront("field_caption",$keyValue[2])));
 	}
-	
+
 	if($isRequiredField==1 && strpos($key,"frmfld")!==false && !is_array($value))
 	{	
 		if($shwField!="" && isset($_POST[$shwField]) && $_POST[$shwField]=="yes")
@@ -56,7 +61,7 @@ foreach($_POST as $key => $value)
 				$objvalidation->addValidation($key, $fieldCaption, "req");
 			}						
 		}
-	}	
+	}
 }
 
 if($objvalidation->validateWithMessage())

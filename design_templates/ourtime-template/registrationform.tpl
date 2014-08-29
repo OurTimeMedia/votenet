@@ -32,7 +32,9 @@
             </div>            
             <div class="from">
 			<div class="homepageleftside">&nbsp;</div>
-			<div class="homepagerightside"><input type="image" name="btnContinue" src="{$image_dir}{$LANG_CONTINUE_TEXT}" alt="Continue" width="122" height="33" /></div>
+			<div class="homepagerightside">
+                <input class="btn btn_next" type="submit" name="btnContinue" value="Continue" />
+            </div>
 			</div>
           </div>
         </div>

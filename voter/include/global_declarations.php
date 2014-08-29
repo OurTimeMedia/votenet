@@ -5,6 +5,23 @@ $env = getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production';
 defined('APPLICATION_ENV') || define('APPLICATION_ENV', $env);
 // end define app environment
 
+/*****************************
+ * *** OURTIME VARIABLES *****
+ *****************************/
+define('OURTIME_SMTP_HOST', 'smtp.gmail.com');
+define('OURTIME_SMTP_PORT', 465);
+define('OURTIME_SMTP_SECURITY', 'ssl');
+define('OURTIME_SMTP_USERNAME', 'vote@ourtime.org');
+define('OURTIME_SMTP_PASSWORD', 'GhrQhReVeMDcJLB');
+
+define('OURTIME_EMAIL_FROMEMAIL', 'info@ourtime.org');
+define('OURTIME_EMAIL_FROMNAME', 'Johanna Berkson, OurTime');
+
+define('OURTIME_EMAIL_SUBJECT', 'Action Required: Your voter registration form is attached');
+/*****************************
+ * ** END OURTIME VARIABLES **
+ *****************************/
+
 
 define("DB_PREFIX","ei_");
 

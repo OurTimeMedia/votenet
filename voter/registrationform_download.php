@@ -15,14 +15,14 @@ if ($cmn->getSession('Home_State_ID') == "")
 	exit;
 }
 
-if((isset($_POST['btnsubmit1']) && $_POST['btnsubmit1'] != "") || (isset($_POST['btnsubmit1_x']) && $_POST['btnsubmit1_x'] != "") )
-{	
-}
-else
+if(!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_POST['btnsubmit_email'])) {
+
+} else
 {
-	header("Location: index.php");
-	exit;
+    header("Location: index.php");
+    exit;
 }
+
 // set up auto-loader
 include DWOO_DIR . 'dwooAutoload.php';
 

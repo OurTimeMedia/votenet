@@ -354,3 +354,71 @@ width:38%;
 .step2download{ float:left; width:59%; text-align:left;}
 .download_h1{}
 .generate_h1{}
+
+
+/***** NEW OURTIME STYLE *****/
+h1 {
+    background-image: none;
+    background-color: #0062b7;
+    padding-left: 15px;
+    margin-bottom: 12px;
+}
+
+.btn_container {
+    margin: 20px 0;
+
+}
+
+.btn_container form {
+    display: inline-block;
+}
+.btn {
+    height: 40px;
+    padding: 10px 30px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #ffffff;
+    border: 0;
+    border-radius: 3px;
+    margin-right: 10px;
+    background-image: url('../images/icons.png');
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+.btn_edit, .btn_next {
+    background-color: #e90506;
+    background-image: none;
+}
+
+.btn_download {
+    background-color: #0bb7f5;
+    background-position: 13px -31px;
+    padding-left: 44px;
+}
+
+.btn_email {
+    background-color: #0062b7;
+    background-position: 13px 10px;
+    padding-left: 44px;
+}
+
+#content-main {
+    width: 100%;
+}
+.content {
+    width: 100%;
+}
+.step1-main {
+    width: 100%;
+}
+.step1 {
+    width: 100%;
+}
+.step-table-container {
+    padding: 0 10px;
+}
+.step-table {
+    width: 100%;
+    padding: 0;
+}

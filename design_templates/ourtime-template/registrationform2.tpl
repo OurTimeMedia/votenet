@@ -15,9 +15,11 @@
       <div class="step1-main">
         <div class="step1">
           <h1>{$reg_step} 2: {$reg_review_and_download}</h1>
-          <div class="step-table">
-            {include(file='registration_step2.php')}
-          </div>
+            <div class="step-table-container">
+              <div class="step-table">
+                {include(file='registration_step2.php')}
+              </div>
+            </div>
         </div>
       </div>
     </div>

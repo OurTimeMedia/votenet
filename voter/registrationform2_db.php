@@ -8,7 +8,7 @@ $sharing_redirect_url = $objWebsite->fieldValue("sharing_redirect_url", "", $con
 
 /** IF BUTTON */
 
-if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x'])) {
+if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_POST['btnsubmit_email'])) {
     require_once(COMMON_CLASS_DIR . "clscommon.php");
     $cmn = new common();
 
@@ -160,11 +160,18 @@ if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x'])) {
         <?php endif ?>
     </script>
 
-    <iframe
-        src="pdfcreation.php?data=<?php echo rawurlencode($postdata); ?>"
-        id="pdfdownload"
-        width="1" height="1"
-        style="border:none;"></iframe>
+
+    <?php
+        $sendEmailQuery .= 'send_email=' . (int)(!empty($_POST['btnsubmit_email']) && !empty($_POST['is_send_email']));
+        $sendEmailQuery .= '&';
+        $sendEmailQuery .= 'user_email=' . rawurlencode($_POST['user_email']);
+    ?>
+
+        <iframe
+            src="pdfcreation.php?<?= $sendEmailQuery; ?>&data=<?= rawurlencode($postdata); ?>"
+            id="pdfdownload"
+            width="1" height="1"
+            style="border:none;"></iframe>
 
 
     <!-- end IF BUTTON -->

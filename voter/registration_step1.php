@@ -758,7 +758,7 @@ if($formcss != "")
 
 			$fixed_idnumaber_note = " <span style='font-size:10px; display:none;' id='fixedIdNote'><br>(<span style='font-weight:bold;'>".LANG_NOTE_SOCIAL_SECURITY.")</span>";
 			echo $IdNumberOption; ?>
-			</select> <span id="span_<?php print $id_field_name; ?>" <?php if(!isset($_POST[$id_field_name])) { ?> style="display:none;" <?php } ?>><input type="password" class="input required" name="<?php print $id_field_name; ?>" id="<?php print $id_field_name; ?>" value="<?php (isset($_POST[$id_field_name])) ? print $cmn->readValue($_POST[$id_field_name]) : print ""; ?>" style="width:200px;" ></span><?php echo $idnumber_field_note.$fixed_idnumaber_note;?></td>
+			</select> <span id="span_<?php print $id_field_name; ?>" <?php if(!isset($_POST[$id_field_name])) { ?> style="display:none;" <?php } ?>><input type="password" class="input required" name="<?php print $id_field_name; ?>" id="<?php print $id_field_name; ?>" value="<?php (isset($_POST[$id_field_name])) ? print $cmn->readValue($_POST[$id_field_name]) : print ""; ?>" style="width:160px;" ></span><?php echo $idnumber_field_note.$fixed_idnumaber_note;?></td>
                     </tr>
 
 		<?php } /* DATE OF BIRTH FIELD */ elseif($frm_hiddenfield_value == 11) { ?>
@@ -990,28 +990,85 @@ if($formcss != "")
 
 				$extra_js_messages.= $frm_field_name.': "'.LANG_ERROR_ENTER_VALID_PHONE_NO.'",';
 				}
-		if ($field_ishide == 1)
-			{ ?>
+		if ($field_ishide == 1) { ?>
 		<script type="text/javascript" language="Javascript">
 		<!--
 			hidedefaultrow('row_<?php print $field_id; ?>', 0);
 		-->
 		</script>
 		<?php }} ?>
+
 		</table></td></tr>
 		<?php } ?>
-<?php }
-if(isset($_SESSION['isPreview']) && $_SESSION['isPreview']!="")
+<?php } ?>
+
+
+
+<?php /******************************************************************************/ ?>
+<?php /*********************** SEND EMAIL *******************************************/ ?>
+<?php /******************************************************************************/ ?>
+
+<?php
+// DETECT FIELD VALUE
+$fieldValue = '';
+$frm_field_name = 'user_email';
+if (isset($_POST[$frm_field_name])) {
+    $fieldValue = $cmn->readValue($_POST[$frm_field_name]);
+} else {
+    $fieldValue = $cmn->getSession('voter_email');
+}
+$isSendEmail = false;
+if ($_POST['is_send_email']) {
+    $isSendEmail = true;
+}
+?>
+
+
+<tr>
+    <td class="white-bro" id="row_is_send_email" style="height: 30px;">
+        <label for="is_send_email" class="normal_text"><input id="is_send_email" type="checkbox" value="1" name="is_send_email" <?php if ($isSendEmail) : ?>checked="checked"<?php endif; ?>>&nbsp;Send application by email.</label>
+    </td>
+</tr>
+<tr id="email_container" class="white-bro">
+    <td width="100%" valign="top" align="left" colspan="2">
+        <label for="user_email" id="lbl_user_email">Your email</label><br>
+        <input id="user_email" type="email" name="user_email" class="input" value="<?= $fieldValue; ?>"/>
+    </td>
+</tr>
+<script>
+    $(document).ready(function(){
+        function changeEmailCheckbox() {
+            if ($('#is_send_email').attr('checked')) {
+                $('#email_container').show();
+            } else {
+                $('#email_container').hide();
+            }
+        }
+
+        changeEmailCheckbox();
+
+        $('#is_send_email').change(changeEmailCheckbox);
+    });
+</script>
+<?php /******************************************************************************/ ?>
+<?php /************************ END SEND EMAIL **************************************/ ?>
+<?php /******************************************************************************/ ?>
+
+<?php if(isset($_SESSION['isPreview']) && $_SESSION['isPreview']!="")
 { ?>
 <tr class="white-bro">
-	  <td align="center" valign="middle"><img src="../images/<?php echo BTN_NEXT;?>" /></td>
+	  <td align="center" valign="middle">
+          <img src="../images/<?php echo BTN_NEXT;?>" />
+      </td>
 	</tr>
 <?php
 }
 else
 { ?>
 	<tr class="white-bro">
-	  <td align="center" valign="middle"><input type="image" src="../images/<?php echo BTN_NEXT;?>" value="Submit" name="btnsubmit" id="btnsubmit" /></td>
+	  <td align="center" valign="middle">
+          <input class="btn btn_next" type="submit" name="btnsubmit"  id="btnsubmit" value="Next &gt;" />
+      </td>
 	</tr>
 <?php } ?>
   </table>

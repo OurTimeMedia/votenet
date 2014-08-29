@@ -1,6 +1,8 @@
 <?php
 require_once("include/common_includes.php");
 
+$sendEmail = (!empty($_REQUEST['send_email']) && $_REQUEST['send_email']);
+
 // parse PDF data came from the registration form
 $postdata = rawurldecode($_SERVER['QUERY_STRING']);
 $postdata = strstr($postdata, "data=");
@@ -14,7 +16,13 @@ parse_str($postdata, $pdfData);
 require_once('../vendor/setasign/setapdf-formfiller_full/library/SetaPDF/Autoload.php');
 
 $outputDocumentName = 'voter' . rand() . '.pdf';
-$writer = new SetaPDF_Core_Writer_Http($outputDocumentName, false);
+
+if ($sendEmail) {
+    $writer = new SetaPDF_Core_Writer_File(VOTER_PDF_DIR . $outputDocumentName);
+} else {
+    $writer = new SetaPDF_Core_Writer_Http($outputDocumentName, false);
+}
+
 $document = SetaPDF_Core_Document::loadByFilename('../SetaPDF/Demos/voter.pdf', $writer);
 
 $FormFiller = new SetaPDF_FormFiller($document);
@@ -89,7 +97,61 @@ foreach ($pdfValues as $pdfValue)  {
 
 }
 
+if ($sendEmail) {
+    // empty SSN field
+    $fields['topmostSubform[0].Page4[0].TextField11[0]']->setValue('');
+}
+
 $document->save()->finish();
+
+if (!empty($_REQUEST['send_email']) && $_REQUEST['send_email'] && !empty($_REQUEST['user_email'])) {
+    // render email body
+    include DWOO_DIR . 'dwooAutoload.php';
+    $templateFile = VOTER_BASE_DIR . 'email_template/email_voter_registration.tpl';
+    $dwoo = new Dwoo();
+    $template = new Dwoo_Template_File($templateFile);
+
+    $templateData = array(
+        'client_firstname' => ucfirst(strtolower($fields->get('topmostSubform[0].Page4[0].TextField1[1]')->getValue())),
+        'client_lastname'  => ucfirst(strtolower($fields->get('topmostSubform[0].Page4[0].TextField1[2]')->getValue())),
+        'client_email' => strtolower($_REQUEST['user_email'])
+    );
+
+    $emailHtmlBody = $dwoo->get($template, $templateData);
+
+    // BUILD EMAIL
+    require_once '../vendor/swiftmailer/swiftmailer/lib/swift_required.php';
+
+    // Create the Transport
+    $transport = Swift_SmtpTransport::newInstance(OURTIME_SMTP_HOST, OURTIME_SMTP_PORT, OURTIME_SMTP_SECURITY)
+        ->setUsername(OURTIME_SMTP_USERNAME)
+        ->setPassword(OURTIME_SMTP_PASSWORD)
+        ;
+
+    // Create the Mailer using your created Transport
+    $mailer = Swift_Mailer::newInstance($transport);
+
+    // Create the message
+    $message = Swift_Message::newInstance()
+        // Give the message a subject
+        ->setSubject(OURTIME_EMAIL_SUBJECT)
+        // Set the From address with an associative array
+        ->setFrom(array(OURTIME_EMAIL_FROMEMAIL => OURTIME_EMAIL_FROMNAME))
+        // Set the To addresses with an associative array
+        ->setTo(array($templateData['client_email'] => $templateData['client_firstname'] . ' ' . $templateData['client_lastname']))
+        // Give it a body
+        //->setBody($emailBody)
+        // And optionally an alternative body
+        ->addPart($emailHtmlBody, 'text/html')
+        // Optionally add any attachments
+        ->attach(Swift_Attachment::fromPath(VOTER_PDF_DIR . $outputDocumentName))
+    ;
+
+    // Send the message
+    $result = $mailer->send($message);
+}
+
+exit;
 
 /**
  * Set value of drop down field

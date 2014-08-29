@@ -1,6 +1,4 @@
 <?php 
-//echo "<pre>";
-//print_r($_POST);
 	set_time_limit(0);
 	$domain = $_REQUEST['domain'];
 	
@@ -98,6 +96,16 @@
 $hiddenvar = "";
 $hiddenvar1 = "";
 $hiddenvar2 = "";
+/*********************** SEND EMAIL *******************************************/
+$hiddenvar.= '<input type="hidden" name="is_send_email" id="is_send_email" value="'.$_POST['is_send_email'].'" />';
+$hiddenvar.= '<input type="hidden" name="user_email" id="user_email" value="'.$_POST['user_email'].'" />';
+
+$hiddenvar1.= '<input type="hidden" name="is_send_email" id="is_send_email" value="'.$_POST['is_send_email'].'" />';
+$hiddenvar1.= '<input type="hidden" name="user_email" id="user_email" value="'.$_POST['user_email'].'" />';
+
+/*********************** SEND EMAIL *******************************************/
+
+
 $k=-1;
 	for($i=0; $i<count($form); $i++)
 	{
@@ -361,30 +369,65 @@ $hiddenvar1.= '<input type="hidden" name="ForPDF['.$k.'][value]" id="'.$field_id
 		</table></td></tr>
 		<?php } ?>		
 <?php } ?>
-	<tr class="white-bro">	  
-	  <td align="center" valign="middle" bgcolor="#EFEDED">
-	  <div class="step2edit">
-	  <form id="frm" name="frm" method="post" action="registrationform1.php" style="padding:0; margin:0;">
-	  <?php echo $hiddenvar; ?>	  
-	  <input type="image" src="../images/<?php echo BTN_EDIT;?>" value="Edit" name="btnsubmitEdit" id="btnsubmitEdit" />	  
-	  </form>
-	  </div>
-	  <div class="step2editdownload">&nbsp;</div>
-	  <div class="step2download">
-	  <form id="frm1" name="frm1" method="post" action="registrationform_download.php" style="padding:0; margin:0;">
-	  <input type="hidden" value="<?php echo $client_id;?>" name="client_id" class="edit-button" >
-	  <?php echo $hiddenvar2; ?>
-	   <?php echo $hiddenvar1; ?>
-	   <span class="step2downloadbtn">
-	   {if $mobile_device}
-	  <input type="image" src="../images/<?php echo BTN_SAVE_MY_FORM;?>" value="Submit" name="btnsubmit1" id="btnsubmit1" class="download-button" />
-	  {else}
-	  <input type="image" src="../images/<?php echo BTN_DOWNLOAD_AND_PRINT_MY_FORM;?>" value="Submit" name="btnsubmit1" id="btnsubmit1" class="download-button" />
-	  {/if}
-	  </span>
-	  </form>
-	  </div>	  
-	  </td>
-	</tr>
-  </table>    
+<tr class="white-bro">
+    <td align="center" valign="middle" bgcolor="#EFEDED">
+        <!--<div class="step2edit">
+            <form id="frm" name="frm" method="post" action="registrationform1.php" style="padding:0; margin:0;">
+                <?php /*echo $hiddenvar; */?>
+                <input type="image" src="../images/<?php /*echo BTN_EDIT; */?>" value="Edit" name="btnsubmitEdit"
+                       id="btnsubmitEdit"/>
+            </form>
+        </div>
+
+        <div class="step2editdownload">&nbsp;</div>
+
+        <div class="step2download">
+            <form id="frm1" name="frm1" method="post" action="registrationform_download.php"
+                  style="padding:0; margin:0;">
+                <input type="hidden" value="<?php /*echo $client_id; */?>" name="client_id" class="edit-button">
+                <?php /*echo $hiddenvar2; */?>
+                <?php /*echo $hiddenvar1; */?>
+                <span class="step2downloadbtn">
+                {if $mobile_device}
+                    <input type="image" src="../images/<?php /*echo BTN_SAVE_MY_FORM; */?>" value="Submit" name="btnsubmit1"
+                        id="btnsubmit1" class="download-button"/>
+                {else}
+                    <input type="image" src="../images/<?php /*echo BTN_DOWNLOAD_AND_PRINT_MY_FORM; */?>" value="Submit" name="btnsubmit1"
+                     id="btnsubmit1" class="download-button"/>
+                {/if}
+                    <input type="submit" value="Email My Form" name="btnsubmit_email"
+                           id="btnsubmit2" class="download-button"/>
+                </span>
+            </form>
+        </div>-->
+
+        <div style="clear:both"></div>
+
+        <div class="btn_container">
+            <form id="frm" name="frm" method="post" action="registrationform1.php" style="padding:0; margin:0;">
+                <?php echo $hiddenvar; ?>
+
+                <input class="btn btn_edit" type="submit" name="btnsubmitEdit" value="Edit" />
+            </form>
+
+            <form id="frm1" name="frm1" method="post" action="registrationform_download.php"
+                  style="padding:0; margin:0;">
+                <input type="hidden" value="<?php echo $client_id; ?>" name="client_id" class="edit-button">
+                <?php echo $hiddenvar2; ?>
+                <?php echo $hiddenvar1; ?>
+                <span class="step2downloadbtn">
+                {if $mobile_device}
+                    <input class="btn btn_download" type="submit" name="btnsubmit1" value="Download My Form" />
+                {else}
+                    <input class="btn btn_download" type="submit" name="btnsubmit1" value="Download and Print My Form" />
+                {/if}
+                <?php if (!empty($_REQUEST['is_send_email'])) : ?>
+                    <input class="btn btn_email" type="submit" name="btnsubmit_email" value="Email My Form" />
+                <?php endif; ?>
+                </span>
+            </form>
+        </div>
+    </td>
+</tr>
+</table>
 <?PHP } ?>
