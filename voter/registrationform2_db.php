@@ -85,7 +85,7 @@ if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_P
 
     $ismobile = ismobile();
 
-    if ($ismobile == 1) {
+    /*if ($ismobile == 1) {
         require_once(COMMON_CLASS_DIR . "clsencdec.php");
         $objEncDec = new encdec();
 
@@ -96,7 +96,7 @@ if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_P
         $objEntry->entrySubmissionMail(ENTRY_MAIL_TO_VOTER, $emailTo, $emailFrom, SERVER_HOST, $registration_link, $client_id);
 
         exit;
-    }
+    }*/
 
     require_once(COMMON_CLASS_DIR . "clsclient.php");
     $objClient = new client();
@@ -166,7 +166,6 @@ if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_P
         $sendEmailQuery .= '&';
         $sendEmailQuery .= 'user_email=' . rawurlencode($_POST['user_email']);
     ?>
-
         <iframe
             src="pdfcreation.php?<?= $sendEmailQuery; ?>&data=<?= rawurlencode($postdata); ?>"
             id="pdfdownload"
