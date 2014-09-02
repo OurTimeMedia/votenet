@@ -159,6 +159,14 @@ class voter_reminder extends common
         $this->runquery($query);
     }
 
+    function markAsNotified($id)
+    {
+        $query = "UPDATE `%s` SET notified = 1, notified_at = NOW() WHERE id = %d";
+        $query = sprintf($query, $this->getTableName(), $id);
+
+        $this->runquery($query);
+    }
+
     function loadReminders()
     {
         $reminders = array();

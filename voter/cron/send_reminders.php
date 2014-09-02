@@ -10,7 +10,7 @@ $reminders = $voterReminder->loadReminders();
 
 foreach ($reminders as $reminder) {
     sendReminder($reminder);
-    $voterReminder->delete($reminder['id']);
+    $voterReminder->markAsNotified($reminder['id']);
 }
 
 function sendReminder($reminder)
@@ -86,6 +86,8 @@ function sendReminder($reminder)
     } else {
         echo "ERROR : RECIPIENT NOT FOUND \n";
     }
+
+    unlink($pdfPath);
 }
 
 exit;
