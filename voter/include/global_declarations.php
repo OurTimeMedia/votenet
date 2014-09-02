@@ -18,6 +18,13 @@ define('OURTIME_EMAIL_FROMEMAIL', 'info@ourtime.org');
 define('OURTIME_EMAIL_FROMNAME', 'Johanna Berkson, OurTime');
 
 define('OURTIME_EMAIL_SUBJECT', 'Action Required: Your voter registration form is attached');
+define('OURTIME_EMAIL_REMINDER_SUBJECT', 'Reminder: Action Required: Your voter registration form is attached');
+
+if ($env == 'production') {
+    define('OURTIME_REMINDER_PERIOD', '3 DAY');
+} else {
+    define('OURTIME_REMINDER_PERIOD', '10 MINUTE');
+}
 /*****************************
  * ** END OURTIME VARIABLES **
  *****************************/
@@ -122,7 +129,8 @@ define('JUDGES_IMAGE_HEIGHT', 170);
 
 ### DEFINE THE SITE CONSTANTS ###
 //define("BASE_DIR", "/2757/SITE");
-define("BASE_DIR", "../");
+//define("BASE_DIR", "../");
+define("BASE_DIR", dirname(dirname(__DIR__)) . '/');
 define('DWOO_DIR', BASE_DIR."library/dwoo/");
 define('DESIGN_TEMPLATES_DIR', BASE_DIR."design_templates/");
 define('VOTER_BASE_DIR', BASE_DIR."voter/");

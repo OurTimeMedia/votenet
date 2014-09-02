@@ -13,10 +13,10 @@ $objvalidation = new validationlang();
 $hiddenvar = "";
 foreach($_POST as $key => $value)
 {
-    if ($key == 'user_email' || $key == 'is_send_email') {
+/*    if ($key == 'user_email' || $key == 'is_send_email') {
         $hiddenvar.= '<input type="hidden" name="'.$key.'" id="'.$key.'" value="'.$value.'" />';
         continue;
-    }
+    }*/
 
 
 	if(is_array($value))

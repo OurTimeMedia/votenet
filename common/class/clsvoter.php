@@ -58,7 +58,7 @@ class voter extends common
 		$sQuery  =  "UPDATE ".DB_PREFIX."voter SET created_by='".$this->voter_id."',updated_by='".$this->voter_id."' WHERE voter_id ='".$this->voter_id."'";
 		$this->runquery($sQuery);
 		
-		return mysql_insert_id();
+		return $this->voter_id;
 	}
 		
 	//Function to update record of table
@@ -110,5 +110,19 @@ class voter extends common
 		
 		$this->runquery($sQuery);
 	}
+
+    function fetchRecordSet($id = "",$condition = "",$order = "user_id")
+    {
+        if ($id != "" && $id != NULL && is_null($id) == false) {
+            $condition = " and voter_id = " . $id . $condition;
+        }
+        if ($order != "" && $order != NULL && is_null($order) == false) {
+            $order = " order by " . $order;
+        }
+        $sQuery = "SELECT * FROM " . DB_PREFIX . "voter WHERE 1 = 1 " . $condition . $order;
+
+        $rs = $this->runquery($sQuery);
+        return $rs;
+    }
 }
 ?>

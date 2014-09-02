@@ -1,4 +1,13 @@
 <?php
+
+// Define app environment
+$env = getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production';
+
+defined('APPLICATION_ENV') || define('APPLICATION_ENV', $env);
+// end define app environment
+
+
+
 define("DB_PREFIX","ei_");
 define("REPORT_DB_PREFIX","election_impact_production_reports.ei_");
 define('SITE_TITLE','Election Impact Control Panel');

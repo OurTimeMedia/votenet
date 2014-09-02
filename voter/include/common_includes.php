@@ -28,14 +28,14 @@ define("SERVER_CLIENT_HOST","http://".$_SERVER['HTTP_HOST']."/client/");
 
 if(isset($_REQUEST['domain']))
 {
-	define("CURRENT_VOTER_URL","http://".$_SERVER['HTTP_HOST']."/");
+    define("CURRENT_VOTER_URL","http://".$_SERVER['HTTP_HOST']."/");
 }
 
-require_once ("include/global_declarations.php");
+require_once (__DIR__ . "/global_declarations.php");
 require_once (COMMON_INCLUDE_DIR ."connect.php");
 
 function __autoload($className)
-{	
-	require_once (SERVER_ROOT."common/class/cls".$className.".php");
+{
+    require_once (SERVER_ROOT."common/class/cls".$className.".php");
 }
 ?>

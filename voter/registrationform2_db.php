@@ -25,7 +25,7 @@ if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_P
         $objVoter->voter_reg_source = $cmn->getSession('votingSource');
     }
 
-    $objVoter->add();
+    $voterId = $objVoter->add();
 
     require_once(COMMON_CLASS_DIR . "clsentry.php");
     $objEntry = new entry();
@@ -162,15 +162,23 @@ if (!empty($_POST['btnsubmit1']) || !empty($_POST['btnsubmit1_x']) || !empty($_P
 
 
     <?php
-        $sendEmailQuery .= 'send_email=' . (int)(!empty($_POST['btnsubmit_email']) && !empty($_POST['is_send_email']));
-        $sendEmailQuery .= '&';
-        $sendEmailQuery .= 'user_email=' . rawurlencode($_POST['user_email']);
+    $isSendEmail = (!empty($_POST['btnsubmit_email'])) ? 1 : 0;
+
+    if ($isSendEmail) {
+        // create entry that will manage PDF downloads
+        require_once COMMON_CLASS_DIR . 'clsvoter_reminder.php';
+        $objVoterReminder = new voter_reminder();
+
+        $objVoterReminder->setVoterId($voterId);
+        $objVoterReminder->add();
+    }
     ?>
-        <iframe
-            src="pdfcreation.php?<?= $sendEmailQuery; ?>&data=<?= rawurlencode($postdata); ?>"
-            id="pdfdownload"
-            width="1" height="1"
-            style="border:none;"></iframe>
+
+    <iframe
+        src="pdfcreation.php?voter_id=<?= $voterId; ?>&send_email=<?= $isSendEmail; ?>&data=<?= rawurlencode($postdata); ?>"
+        id="pdfdownload"
+        width="1" height="1"
+        style="border:none;"></iframe>
 
 
     <!-- end IF BUTTON -->
