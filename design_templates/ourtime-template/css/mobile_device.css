@@ -52,7 +52,7 @@ body{
 }
 
 .content {
-    background: none repeat scroll 0 0 #F8F8F8;
+    background: none repeat scroll 0 0 #ffffff;
     border: 1px solid #CCCCCC;
     float: left;
     width:95%;
@@ -204,4 +204,30 @@ h1 {
     background-color: #0062b7;
     background-position: 13px 10px;
     padding-left: 44px;
+}
+
+.input, .select {
+    border-radius: 0px;
+}
+
+#tblform h2 {
+    background: #e7e7e7;
+    color: #000000;
+}
+
+.register1right #tblform h2 {
+    background: #ffffff;
+}
+
+.step-table-container {
+    padding: 0;
+}
+
+.step1 {
+    background: #ffffff;
+}
+
+.content {
+    border: none;
+    background: #ffffff;
 }

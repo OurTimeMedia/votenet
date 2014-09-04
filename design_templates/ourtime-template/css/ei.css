@@ -418,7 +418,7 @@ h1 {
     background: #ffffff;
 }
 .step-table-container {
-    padding: 0 10px;
+    padding: 0;
 }
 .step-table {
     width: 100%;
@@ -430,6 +430,10 @@ h1 {
 }
 
 #tblform h2 {
-    background: #ffffff;
+    background: #e7e7e7;
     color: #000000;
+}
+
+.register1right #tblform h2 {
+    background: #ffffff;
 }
