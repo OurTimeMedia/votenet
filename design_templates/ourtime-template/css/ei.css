@@ -408,12 +408,14 @@ h1 {
 }
 .content {
     width: 100%;
+    border: none;
 }
 .step1-main {
     width: 100%;
 }
 .step1 {
     width: 100%;
+    background: #ffffff;
 }
 .step-table-container {
     padding: 0 10px;
@@ -421,4 +423,13 @@ h1 {
 .step-table {
     width: 100%;
     padding: 0;
+}
+
+.input, .select {
+    border-radius: 0px;
+}
+
+#tblform h2 {
+    background: #ffffff;
+    color: #000000;
 }

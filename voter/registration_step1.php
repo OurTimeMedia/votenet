@@ -43,14 +43,7 @@
 	}
 
 	$formcss = "";
-	if($objForm->form_background != "" )
-	{
-		$formcss.= "#tblform h2 { background:"."#".str_replace("#","",$objForm->form_background).";}\n";
-	}
-	if($objForm->form_header_text != "" )
-	{
-		$formcss.= "#tblform h2 { color:"."#".str_replace("#","",$objForm->form_header_text).";}\n";
-	}
+
 	if($objForm->form_normal_text_bg != "" )
 	{
 		$formcss.= "#tblform td { background:"."#".str_replace("#","",$objForm->form_normal_text_bg).";}\n#tblform td  .normal_text{ background:"."#".str_replace("#","",$objForm->form_normal_text_bg)."; font: 13px helvetica,arial,sans;}\n";
