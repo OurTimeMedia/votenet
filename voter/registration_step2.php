@@ -391,7 +391,7 @@ $hiddenvar1.= '<input type="hidden" name="ForPDF['.$k.'][value]" id="'.$field_id
                 {else}
                     <input class="btn btn_download" type="submit" name="btnsubmit1" value="Download and Print My Form" />
                 {/if}
-                <input class="btn btn_email" type="submit" name="btnsubmit_email" value="Email My Form" />
+                <input class="btn btn_email" type="submit" name="btnsubmit_email" value="I'm Done. Email me my form" />
                 </span>
             </form>
         </div>
