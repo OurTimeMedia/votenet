@@ -8,11 +8,11 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', $env);
 /*****************************
  * *** OURTIME VARIABLES *****
  *****************************/
-define('OURTIME_SMTP_HOST', 'smtp.gmail.com');
+define('OURTIME_SMTP_HOST', 'smtp.sendgrid.net');
 define('OURTIME_SMTP_PORT', 465);
 define('OURTIME_SMTP_SECURITY', 'ssl');
-define('OURTIME_SMTP_USERNAME', 'vote@ourtime.org');
-define('OURTIME_SMTP_PASSWORD', 'GhrQhReVeMDcJLB');
+define('OURTIME_SMTP_USERNAME', 'ourtime');
+define('OURTIME_SMTP_PASSWORD', 'regtovote2014');
 
 define('OURTIME_EMAIL_FROMEMAIL', 'info@ourtime.org');
 define('OURTIME_EMAIL_FROMNAME', 'Johanna Berkson, OurTime');
